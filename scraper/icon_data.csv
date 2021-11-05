@@ -1547,7 +1547,7 @@ id,name,group,id_in_group,is_free,image_url,gif_url
 1545,Price Tag,Ecommerce,37,free,https://icons8.com//vue-static/landings/animated-icons/icons/price-tag/price-tag.svg,https://icons8.com//vue-static/landings/animated-icons/icons/price-tag/price-tag_200.gif
 1546,Pricing,Ecommerce,38,free,https://icons8.com//vue-static/landings/animated-icons/icons/pricing/pricing.svg,https://icons8.com//vue-static/landings/animated-icons/icons/pricing/pricing_200.gif
 1547,Product,Ecommerce,39,free,https://icons8.com//vue-static/landings/animated-icons/icons/product/product.svg,https://icons8.com//vue-static/landings/animated-icons/icons/product/product_200.gif
-1548,,Ecommerce,40,free,https://icons8.com//vue-static/landings/animated-icons/icons/receipt/receipt.svg,https://icons8.com//vue-static/landings/animated-icons/icons/receipt/receipt_200.gif
+1548,Receipt,Ecommerce,40,free,https://icons8.com//vue-static/landings/animated-icons/icons/receipt/receipt.svg,https://icons8.com//vue-static/landings/animated-icons/icons/receipt/receipt_200.gif
 1549,Sale,Ecommerce,41,free,https://icons8.com//vue-static/landings/animated-icons/icons/sale/sale.svg,https://icons8.com//vue-static/landings/animated-icons/icons/sale/sale_200.gif
 1550,Shipped,Ecommerce,42,free,https://icons8.com//vue-static/landings/animated-icons/icons/shipped/shipped.svg,https://icons8.com//vue-static/landings/animated-icons/icons/shipped/shipped_200.gif
 1551,Shopping,Ecommerce,43,free,https://icons8.com//vue-static/landings/animated-icons/icons/shopping/shopping.svg,https://icons8.com//vue-static/landings/animated-icons/icons/shopping/shopping_200.gif
