@@ -1,7 +1,11 @@
 from vae.model import VAE
 
+import numpy as np
 import tensorflow as tf
+from PIL import Image
 import math
+import os
+from more_itertools import pairwise
 
 
 def encode(model: VAE, data: tf.Tensor):
@@ -51,3 +55,42 @@ def get_sample(model: VAE, data: tf.Tensor, radius: float, center_vec, dir_vec, 
     decode_shape = [latent.shape[0]] + data.shape[1:]
     # [batch_size * sample_rate, c, h, w]
     return decode(model, latent, decode_shape)
+
+
+def split_img(samples: np.ndarray, batch_size):
+    for start, end in pairwise(range(0, samples.shape[0] + 1, batch_size)):
+        images = np.squeeze(samples[start: end], 1)
+        images = np.clip(images, 0, 1) * 255
+        images = images.astype(np.uint8)
+        yield images
+
+
+def save_gray_img(samples: np.ndarray, batch_size, img_folder='.'):
+    """
+
+    :param samples: [batch_size * sample_rate, 1, h, w]
+    :param batch_size:
+    :param img_folder:
+    :return:
+    """
+    for n_img, img_frames in enumerate(split_img(samples, batch_size)):
+        img_sub_folder = os.path.join(img_folder, f"image{n_img:03d}")
+        os.makedirs(img_sub_folder, exist_ok=True)
+        frames = []
+        for n_frame, frame in enumerate(img_frames):
+            # [h, w]
+            frame = Image.fromarray(frame)
+            frames.append(frame)
+            file = os.path.join(img_sub_folder, f"{n_frame:03d}.png")
+            frame.save(file)
+        gif_file = os.path.join(img_sub_folder, f"gif{n_img:03d}.gif")
+        frames[0].save(gif_file, save_all=True, append_images=frames[1:])
+
+
+def test_circle_sampling(model: VAE, data: tf.Tensor):
+    batch_size = data.shape[0]
+    radius = 0.1
+    center_vec = tf.one_hot([0], model.latent_size)
+    dir_vec = tf.one_hot([1], model.latent_size)
+    samples = get_sample(model, data, radius, center_vec, dir_vec, 10).numpy()
+    save_gray_img(samples, batch_size)
