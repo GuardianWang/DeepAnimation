@@ -26,3 +26,8 @@ the corresponding point on the circle is defined as
 
 
 ![circle_sampling](doc/circle_sampling.png)
+
+This is the visualization of samples surrounding an MNIST image.
+We use VAE trained on MNIST to generate  this gif.
+
+![MNIST](doc/gif001.gif)
