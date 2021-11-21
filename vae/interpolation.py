@@ -9,21 +9,32 @@ from more_itertools import pairwise
 
 
 def encode(model: VAE, data: tf.Tensor):
+    """
+    Call VAE encoder
+    """
     return model.encode(data)[0]
 
 
 def circle_sampling(latent: tf.Tensor, radius: float, center_vec, dir_vec, sample_rate: int):
     """
-    Sampling along a circle.
+    Sampling along a high-dim circle.
+    Given a sample `latent`, `center_vec` defines the vector from `latent` to circle center,
+    and `dir_vec` defines the tangent direction to move along the circle from `latent`.
     :param latent:
         Latent representation of shape [batch_size, latent_size]
     :param radius:
+        Circle radius.
     :param center_vec:
         [1, latent_size] or [sample_rate, latent_size]
+        Defines the vector from `latent` to circle center
     :param dir_vec:
         [1, latent_size] or [sample_rate, latent_size]
+        Defines the tangent direction to move along the circle from `latent`.
     :param sample_rate:
+        Sample how many points along the circle.
     :return:
+        [batch_size * sample_rate, latent_size]
+        Every `sample_rate` images correspond to samples of one image.
     """
 
     # [sample_rate, 1]
@@ -44,10 +55,32 @@ def circle_sampling(latent: tf.Tensor, radius: float, center_vec, dir_vec, sampl
 
 
 def decode(model: VAE, latent: tf.Tensor, shape: tf.Tensor):
+    """
+    Call VAE decoder
+    """
     return model.decode(latent, shape)
 
 
 def get_sample(model: VAE, data: tf.Tensor, radius: float, center_vec, dir_vec, sample_rate: int):
+    """
+    Get samples in latent space.
+    :param model:
+    :param data:
+        Latent representation of shape [batch_size, latent_size]
+    :param radius:
+        Circle radius.
+    :param center_vec:
+        [1, latent_size] or [sample_rate, latent_size]
+        Defines the vector from `latent` to circle center
+    :param dir_vec:
+        [1, latent_size] or [sample_rate, latent_size]
+        Defines the tangent direction to move along the circle from `latent`.
+    :param sample_rate:
+        Sample how many points along the circle.
+    :return:
+        [batch_size * sample_rate, latent_size]
+        Every `sample_rate` images correspond to samples of one image.
+    """
     latent = encode(model, data)
     latent = circle_sampling(latent, radius, center_vec, dir_vec, sample_rate)
     decode_shape = [latent.shape[0]] + data.shape[1:]
@@ -56,6 +89,14 @@ def get_sample(model: VAE, data: tf.Tensor, radius: float, center_vec, dir_vec, 
 
 
 def split_img(samples: np.ndarray, batch_size):
+    """
+    Image samples generator.
+    Yield samples of one image at a time.
+    :param samples:
+    :param batch_size:
+    :return:
+        Samples of one image. Values are in range [0, 255]
+    """
     step = int(samples.shape[0] / batch_size)
     for start, end in pairwise(range(0, samples.shape[0] + 1, step)):
         images = np.squeeze(samples[start: end], 1)
@@ -66,10 +107,11 @@ def split_img(samples: np.ndarray, batch_size):
 
 def save_gray_img(samples: np.ndarray, batch_size, img_folder='.'):
     """
-
+    Save gray images and gifs.
     :param samples: [batch_size * sample_rate, 1, h, w]
     :param batch_size:
     :param img_folder:
+        Root of image directory.
     :return:
     """
     for n_img, img_frames in enumerate(split_img(samples, batch_size)):
@@ -87,6 +129,13 @@ def save_gray_img(samples: np.ndarray, batch_size, img_folder='.'):
 
 
 def test_circle_sampling(model: VAE, data: tf.Tensor, img_folder='.'):
+    """
+    Tests circle sampler.
+    :param model:
+    :param data:
+    :param img_folder:
+    :return:
+    """
     batch_size = data.shape[0]
     radius = 10
     sample_rate = 10
