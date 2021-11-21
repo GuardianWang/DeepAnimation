@@ -1,10 +1,11 @@
-from vae.utils import *
-from vae.model import *
-from vae.dataset import *
-from vae.config import *
-from vae.loss import *
+from utils import *
+from model import *
+from dataset import *
+from config import *
+from loss import *
+from interpolation import test_circle_sampling
 
-import tqdm
+from tqdm import tqdm
 
 
 def train_vae(model, train_loader, args, is_cvae=False):
@@ -30,7 +31,7 @@ def train_vae(model, train_loader, args, is_cvae=False):
     total_loss = 0
     for n_batch, (data, labels) in enumerate(train_loader):
         if is_cvae:
-            one_hot_labels = one_hot(labels, 10)
+            one_hot_labels = one_hot_labels(labels, 10)
         with tf.GradientTape() as tape:
             output = model(data, one_hot_labels) if is_cvae else model(data)
             loss = loss_function(output[0], data, output[1], output[2])
@@ -67,6 +68,11 @@ def main(args):
     for epoch_id in range(args.num_epochs):
         total_loss = train_vae(model, train_dataset, args, is_cvae=args.is_cvae)
         print(f"Train Epoch: {epoch_id} \tLoss: {total_loss/len(train_dataset):.6f}")
+
+    # sampling
+    for data, _ in train_dataset:
+        test_circle_sampling(model, data[:2], "image")
+        break
 
     # Visualize results
     if args.is_cvae:

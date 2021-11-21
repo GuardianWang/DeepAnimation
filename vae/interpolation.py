@@ -1,4 +1,4 @@
-from vae.model import VAE
+from model import VAE
 
 import numpy as np
 import tensorflow as tf
@@ -27,7 +27,7 @@ def circle_sampling(latent: tf.Tensor, radius: float, center_vec, dir_vec, sampl
     """
 
     # [sample_rate, 1]
-    thetas = tf.linspace(0, tf.constant(math.pi), sample_rate)[:, tf.newaxis]
+    thetas = tf.linspace(0.0, tf.constant(2 * math.pi), sample_rate)[:, tf.newaxis]
     # unit vector
     center_vec = tf.math.l2_normalize(center_vec, axis=1)
     dir_vec = tf.math.l2_normalize(dir_vec, axis=1)
@@ -35,8 +35,6 @@ def circle_sampling(latent: tf.Tensor, radius: float, center_vec, dir_vec, sampl
     deltas = (radius - radius * tf.cos(thetas)) * center_vec + radius * tf.sin(thetas) * dir_vec
     # [sample_rate * batch_size, latent_size]
     deltas = tf.tile(deltas, [latent.shape[0], 1])
-    # [sample_rate * batch_size, latent_size]
-    deltas = deltas[:, tf.newaxis]
 
     # [batch_size * sample_rate, latent_size]
     latent = tf.repeat(latent, [sample_rate], axis=0)
@@ -58,7 +56,8 @@ def get_sample(model: VAE, data: tf.Tensor, radius: float, center_vec, dir_vec, 
 
 
 def split_img(samples: np.ndarray, batch_size):
-    for start, end in pairwise(range(0, samples.shape[0] + 1, batch_size)):
+    step = int(samples.shape[0] / batch_size)
+    for start, end in pairwise(range(0, samples.shape[0] + 1, step)):
         images = np.squeeze(samples[start: end], 1)
         images = np.clip(images, 0, 1) * 255
         images = images.astype(np.uint8)
@@ -84,13 +83,14 @@ def save_gray_img(samples: np.ndarray, batch_size, img_folder='.'):
             file = os.path.join(img_sub_folder, f"{n_frame:03d}.png")
             frame.save(file)
         gif_file = os.path.join(img_sub_folder, f"gif{n_img:03d}.gif")
-        frames[0].save(gif_file, save_all=True, append_images=frames[1:])
+        frames[0].save(gif_file, save_all=True, append_images=frames[1:], loop=0)
 
 
-def test_circle_sampling(model: VAE, data: tf.Tensor):
+def test_circle_sampling(model: VAE, data: tf.Tensor, img_folder='.'):
     batch_size = data.shape[0]
-    radius = 0.1
+    radius = 10
+    sample_rate = 10
     center_vec = tf.one_hot([0], model.latent_size)
     dir_vec = tf.one_hot([1], model.latent_size)
-    samples = get_sample(model, data, radius, center_vec, dir_vec, 10).numpy()
-    save_gray_img(samples, batch_size)
+    samples = get_sample(model, data, radius, center_vec, dir_vec, sample_rate).numpy()
+    save_gray_img(samples, batch_size, img_folder)
