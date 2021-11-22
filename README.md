@@ -31,3 +31,18 @@ This is the visualization of samples surrounding an MNIST image.
 We use VAE trained on MNIST to generate  this gif.
 
 ![MNIST](doc/gif001.gif)
+
+## Data from other domain
+
+We tried this image with Chinese character on the VAE model trained 
+on MNIST dataset.
+
+![wang](doc/unseen.png)
+
+The result is as follows, which means it doesn't generate well for 
+different domains.
+
+![MNIST](doc/unseen.gif)
+
+We also notice that the model tends to generate 3 and 6, which deserves 
+more investigation.
