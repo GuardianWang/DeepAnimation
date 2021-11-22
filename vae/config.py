@@ -12,6 +12,6 @@ def parse_arguments():
     parser.add_argument("--latent_size", type=int, default=15)
     parser.add_argument("--input_size", type=int, default=28*28)
     parser.add_argument("--learning_rate", type=float, default=1e-3)
-    args = parser.parse_args([])
+    args = parser.parse_args()
 
     return args
