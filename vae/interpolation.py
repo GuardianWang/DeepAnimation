@@ -125,7 +125,7 @@ def save_gray_img(samples: np.ndarray, batch_size, img_folder='.'):
             file = os.path.join(img_sub_folder, f"{n_frame:03d}.png")
             frame.save(file)
         gif_file = os.path.join(img_sub_folder, f"gif{n_img:03d}.gif")
-        frames[0].save(gif_file, save_all=True, append_images=frames[1:], loop=0)
+        frames[0].save(gif_file, save_all=True, append_images=frames[1:], loop=0, duration=5)
 
 
 def test_circle_sampling(model: VAE, data: tf.Tensor, img_folder='.'):
@@ -137,8 +137,8 @@ def test_circle_sampling(model: VAE, data: tf.Tensor, img_folder='.'):
     :return:
     """
     batch_size = data.shape[0]
-    radius = 10
-    sample_rate = 10
+    radius = 5
+    sample_rate = 100
     center_vec = tf.one_hot([0], model.latent_size)
     dir_vec = tf.one_hot([1], model.latent_size)
     samples = get_sample(model, data, radius, center_vec, dir_vec, sample_rate).numpy()
