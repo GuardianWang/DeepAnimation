@@ -29,7 +29,7 @@ def save_model_weights(model, args):
 
     Inputs:
     - model: Trained VAE model.
-    - args: All arguments.
+    - cfg: All arguments.
     """
     model_flag = "cvae" if args.is_cvae else "vae"
     output_dir = os.path.join("model_ckpts", model_flag)

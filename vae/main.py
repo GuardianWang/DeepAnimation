@@ -8,14 +8,14 @@ from interpolation import test_circle_sampling
 from tqdm import tqdm
 
 
-def train_vae(model, train_loader, args, is_cvae=False):
+def train_vae(model, train_loader, cfg, is_cvae=False):
     """
     Train your VAE with one epoch.
 
     Inputs:
     - model: Your VAE instance.
     - train_loader: A tf.data.Dataset of MNIST dataset.
-    - args: All arguments.
+    - cfg: All arguments.
     - is_cvae: A boolean flag for Conditional-VAE. If your model is a Conditional-VAE,
     set is_cvae=True. If it's a Vanilla-VAE, set is_cvae=False.
 
@@ -23,7 +23,6 @@ def train_vae(model, train_loader, args, is_cvae=False):
     - total_loss: Sum of loss values of all batches.
     """
     mean_loss = 0
-    mean_acc = 0
     n_prev = 0
     n_curr = 0
     n_batches = len(train_loader)
@@ -50,23 +49,23 @@ def train_vae(model, train_loader, args, is_cvae=False):
     return total_loss
 
 
-def main(args):
+def main(cfg):
     # Load MNIST dataset
-    train_dataset = load_mnist(args.batch_size)
+    train_dataset = load_mnist(cfg.batch_size)
 
     # Get an instance of VAE
-    if args.is_cvae:
-        model = CVAE(args.input_size, latent_size=args.latent_size)
+    if cfg.is_cvae:
+        model = CVAE(cfg.input_size, latent_size=cfg.latent_size)
     else:
-        model = VAE(args.input_size, latent_size=args.latent_size)
+        model = VAE(cfg.input_size, latent_size=cfg.latent_size)
 
     # Load trained weights
-    #if args.load_weights:
-    #    model = load_weights(model)
+    if cfg.load_weights:
+        model = load_weights(model, cfg.is_cvae)
 
     # Train VAE
-    for epoch_id in range(args.num_epochs):
-        total_loss = train_vae(model, train_dataset, args, is_cvae=args.is_cvae)
+    for epoch_id in range(cfg.num_epochs):
+        total_loss = train_vae(model, train_dataset, cfg, is_cvae=cfg.is_cvae)
         print(f"Train Epoch: {epoch_id} \tLoss: {total_loss/len(train_dataset):.6f}")
 
     # sampling
@@ -75,16 +74,18 @@ def main(args):
         break
 
     # Visualize results
-    if args.is_cvae:
-        show_cvae_images(model, args.latent_size)
-    else:
-        show_vae_images(model, args.latent_size)
-        show_vae_interpolation(model, args.latent_size)
+    if cfg.visualize:
+        if cfg.is_cvae:
+            show_cvae_images(model, cfg.latent_size)
+        else:
+            show_vae_images(model, cfg.latent_size)
+            show_vae_interpolation(model, cfg.latent_size)
 
     # Optional: Save VAE/CVAE model for debugging/testing.
-    save_model_weights(model, args)
+    if cfg.save_weights:
+        save_model_weights(model, cfg)
 
 
 if __name__ == "__main__":
-    args = parse_arguments()
-    main(args)
+    config = parse_arguments()
+    main(config)
