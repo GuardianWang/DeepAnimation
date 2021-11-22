@@ -1,12 +1,14 @@
 """
 Brown CSCI 1470/2470 Deep Learning homework 5
 """
+from utils import load_weights
+
 import tensorflow as tf
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dense, Flatten, Reshape, Input, Concatenate
 from tensorflow import exp, sqrt, square
 
-__all__ = ['VAE', 'CVAE']
+__all__ = ['VAE', 'CVAE', 'get_model']
 
 
 class VAE(tf.keras.Model):
@@ -212,3 +214,14 @@ def reparametrize(mu, logvar):
     #                              END OF YOUR CODE                                                #
     ################################################################################################
     return z
+
+
+def get_model(cfg):
+    if cfg.is_cvae:
+        model = CVAE(cfg.input_size, latent_size=cfg.latent_size)
+    else:
+        model = VAE(cfg.input_size, latent_size=cfg.latent_size)
+    if cfg.load_weights:
+        load_weights(model, cfg.is_cvae)
+
+    return model

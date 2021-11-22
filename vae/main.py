@@ -5,7 +5,9 @@ from config import *
 from loss import *
 from interpolation import test_circle_sampling
 
+import numpy as np
 from tqdm import tqdm
+from PIL import Image
 
 
 def train_vae(model, train_loader, cfg, is_cvae=False):
@@ -68,11 +70,6 @@ def main(cfg):
         total_loss = train_vae(model, train_dataset, cfg, is_cvae=cfg.is_cvae)
         print(f"Train Epoch: {epoch_id} \tLoss: {total_loss/len(train_dataset):.6f}")
 
-    # sampling
-    for data, _ in train_dataset:
-        test_circle_sampling(model, data[:2], "image")
-        break
-
     # Visualize results
     if cfg.visualize:
         if cfg.is_cvae:
@@ -86,6 +83,26 @@ def main(cfg):
         save_model_weights(model, cfg)
 
 
+def test_sampling(cfg):
+    model = get_model(cfg)
+    train_dataset = load_mnist(cfg.batch_size)
+    for data, _ in train_dataset:
+        test_circle_sampling(model, data[:2], "image")
+        break
+
+
+def test_unseen(cfg):
+    model = get_model(cfg)
+    img_path = "../doc/unseen.png"
+    img = Image.open(img_path).convert('L')
+    img.thumbnail((28, 28), Image.ANTIALIAS)  # gray
+    img = np.array(img).astype(np.float32) / 255.
+    img = img[np.newaxis, np.newaxis, ...]
+    img = tf.convert_to_tensor(img)
+    test_circle_sampling(model, img, "image")
+
+
 if __name__ == "__main__":
     config = parse_arguments()
-    main(config)
+    # main(config)
+    test_unseen(config)

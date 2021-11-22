@@ -137,8 +137,8 @@ def test_circle_sampling(model: VAE, data: tf.Tensor, img_folder='.'):
     :return:
     """
     batch_size = data.shape[0]
-    radius = 5
-    sample_rate = 100
+    radius = 2
+    sample_rate = 200
     center_vec = tf.one_hot([0], model.latent_size)
     dir_vec = tf.one_hot([1], model.latent_size)
     samples = get_sample(model, data, radius, center_vec, dir_vec, sample_rate).numpy()
