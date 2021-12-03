@@ -3,6 +3,7 @@ import os
 from os import listdir
 from os.path import isfile, join
 import argparse
+from tqdm import tqdm
 
 
 def extract_frames(input_folder_name, output_folder_name, gif_name, num_frames):
@@ -31,7 +32,7 @@ if __name__ == "__main__":
         os.makedirs(args["output"]+"/svgs")
 
     gif_files = [f for f in listdir(args["input"]) if isfile(join(args["input"], f))]
-    for f in gif_files:
+    for f in tqdm(gif_files):
         extract_frames(args["input"], args["output"], f, int(args["num_frames"]))
 
     png_files = [f for f in listdir(args["output"]+"/pngs") if isfile(join(args["output"]+"/pngs", f))]
