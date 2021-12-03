@@ -4,11 +4,13 @@ from os import listdir
 from os.path import isfile, join
 import argparse
 
+
 def extract_frames(input_folder_name, output_folder_name, gif_name, num_frames):
     with Image.open(input_folder_name + "/" + gif_name) as im:
         for i in range(num_frames):
             im.seek(im.n_frames // num_frames * i)
             im.save('%s-%i.png' % (output_folder_name + "/pngs/" + gif_name.split(".")[0], i))
+
 
 if __name__ == "__main__":
     # Parse arguments
@@ -36,4 +38,3 @@ if __name__ == "__main__":
     for f in png_files:
         print("Converting %s..." % f)
         os.system("vtracer --input %s --output %s -m polygon" % (args["output"] + "/pngs/" + f, args["output"] + "/svgs/" + f.split(".")[0]+".svg"))
-    
