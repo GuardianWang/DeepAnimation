@@ -1,9 +1,9 @@
-from .utils import *
-from .model import *
-from .dataset import *
-from .config import *
-from .loss import *
-from .interpolation import test_circle_sampling
+from utils import *
+from model import *
+from dataset import *
+from config import *
+from loss import *
+from interpolation import test_circle_sampling
 
 import numpy as np
 from tqdm import tqdm
@@ -15,10 +15,10 @@ def train_vae(model, train_loader, cfg, is_cvae=False):
     Train your VAE with one epoch.
 
     Inputs:
-    - base_model: Your VAE instance.
-    - train_loader: A tf.images.Dataset of MNIST dataset.
+    - model: Your VAE instance.
+    - train_loader: A tf.data.Dataset of MNIST dataset.
     - cfg: All arguments.
-    - is_cvae: A boolean flag for Conditional-VAE. If your base_model is a Conditional-VAE,
+    - is_cvae: A boolean flag for Conditional-VAE. If your model is a Conditional-VAE,
     set is_cvae=True. If it's a Vanilla-VAE, set is_cvae=False.
 
     Returns:
@@ -78,7 +78,7 @@ def main(cfg):
             show_vae_images(model, cfg.latent_size)
             show_vae_interpolation(model, cfg.latent_size)
 
-    # Optional: Save VAE/CVAE base_model for debugging/testing.
+    # Optional: Save VAE/CVAE model for debugging/testing.
     if cfg.save_weights:
         save_model_weights(model, cfg)
 

@@ -25,10 +25,10 @@ def one_hot(labels, class_size):
 
 def save_model_weights(model, args):
     """
-    Save trained VAE base_model weights to model_ckpts/
+    Save trained VAE model weights to model_ckpts/
 
     Inputs:
-    - base_model: Trained VAE base_model.
+    - model: Trained VAE model.
     - cfg: All arguments.
     """
     model_flag = "cvae" if args.is_cvae else "vae"
@@ -41,14 +41,14 @@ def save_model_weights(model, args):
 
 def show_vae_images(model, latent_size):
     """
-    Call this only if the base_model is VAE!
+    Call this only if the model is VAE!
     Generate 10 images from random vectors.
     Show the generated images from your trained VAE.
     Image will be saved to outputs/show_vae_images.pdf
 
     Inputs:
-    - base_model: Your trained base_model.
-    - latent_size: Latent size of your base_model.
+    - model: Your trained model.
+    - latent_size: Latent size of your model.
     """
     # Generated images from vectors of random values.
     z = tf.random.normal(shape=[10, latent_size])
@@ -75,14 +75,14 @@ def show_vae_images(model, latent_size):
 
 def show_vae_interpolation(model, latent_size):
     """
-    Call this only if the base_model is VAE!
+    Call this only if the model is VAE!
     Generate interpolation between two .
     Show the generated images from your trained VAE.
     Image will be saved to outputs/show_vae_interpolation.pdf
 
     Inputs:
-    - base_model: Your trained base_model.
-    - latent_size: Latent size of your base_model.
+    - model: Your trained model.
+    - latent_size: Latent size of your model.
     """
 
     def show_interpolation(images):
@@ -123,14 +123,14 @@ def show_vae_interpolation(model, latent_size):
 
 def show_cvae_images(model, latent_size):
     """
-    Call this only if the base_model is CVAE!
+    Call this only if the model is CVAE!
     Conditionally generate 10 images for each digit.
     Show the generated images from your trained CVAE.
     Image will be saved to outputs/show_cvae_images.pdf
 
     Inputs:
-    - base_model: Your trained base_model.
-    - latent_size: Latent size of your base_model.
+    - model: Your trained model.
+    - latent_size: Latent size of your model.
     """
     # Conditionally generated images from vectors of random values.
     num_generation = 100
@@ -174,16 +174,16 @@ def show_cvae_images(model, latent_size):
 
 def load_weights(model, is_cvae):
     """
-    Load the trained base_model's weights.
+    Load the trained model's weights.
 
     Inputs:
-    - base_model: Your untrained base_model instance.
+    - model: Your untrained model instance.
 
     Returns:
-    - base_model: Trained base_model.
+    - model: Trained model.
     """
     num_classes = 10
-    inputs = tf.zeros([1, 1, 28, 28])  # Random images sample
+    inputs = tf.zeros([1, 1, 28, 28])  # Random data sample
     labels = tf.constant([[0]])
     if is_cvae:
         weights_path = os.path.join("model_ckpts", "cvae", "cvae")
