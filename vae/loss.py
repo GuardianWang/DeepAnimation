@@ -8,8 +8,8 @@ def bce_function(x_hat, x):
     Computes the reconstruction loss of the VAE.
 
     Inputs:
-    - x_hat: Reconstructed input data of shape (N, 1, H, W)
-    - x: Input data for this timestep of shape (N, 1, H, W)
+    - x_hat: Reconstructed input images of shape (N, 1, H, W)
+    - x: Input images for this timestep of shape (N, 1, H, W)
 
     Returns:
     - reconstruction_loss: Tensor containing the scalar loss for the reconstruction loss term.
@@ -19,7 +19,7 @@ def bce_function(x_hat, x):
         reduction=tf.keras.losses.Reduction.SUM,
     )
     reconstruction_loss = bce_fn(x, x_hat) * x.shape[
-        -1]  # Sum over all loss terms for each data point. This looks weird, but we need this to work...
+        -1]  # Sum over all loss terms for each images point. This looks weird, but we need this to work...
     return reconstruction_loss
 
 
@@ -30,8 +30,8 @@ def loss_function(x_hat, x, mu, logvar):
     Returned loss is the average loss per sample in the current batch.
 
     Inputs:
-    - x_hat: Reconstructed input data of shape (N, 1, H, W)
-    - x: Input data for this timestep of shape (N, 1, H, W)
+    - x_hat: Reconstructed input images of shape (N, 1, H, W)
+    - x: Input images for this timestep of shape (N, 1, H, W)
     - mu: Matrix representing estimated posterior mu (N, Z), with Z latent space dimension
     - logvar: Matrix representing estimated variance in log-space (N, Z), with Z latent space dimension
 

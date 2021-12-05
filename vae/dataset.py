@@ -8,10 +8,10 @@ def load_mnist(batch_size, buffer_size=1024):
 
     Inputs:
     - batch_size: An integer value of batch size.
-    - buffer_size: Buffer size for random sampling in tf.data.Dataset.shuffle().
+    - buffer_size: Buffer size for random sampling in tf.images.Dataset.shuffle().
 
     Returns:
-    - train_dataset: A tf.data.Dataset instance of MNIST dataset. Batching and shuffling are already supported.
+    - train_dataset: A tf.images.Dataset instance of MNIST dataset. Batching and shuffling are already supported.
     """
     mnist = tf.keras.datasets.mnist
     (x_train, y_train), _ = mnist.load_data()
