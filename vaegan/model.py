@@ -1,7 +1,6 @@
 """
 For normal image formats
 """
-from vae.model import reparametrize
 import tensorflow as tf
 from tensorflow.keras.applications import VGG16
 from tensorflow.keras import Model, Sequential, layers
@@ -22,8 +21,8 @@ class VAEGAN(Model):
 
         self.concat = Concatenate()
 
-        self.optim_g = Adam(1e-3)
-        self.optim_d = Adam(1e-3)
+        self.optim_g = Adam(1e-4)
+        self.optim_d = Adam(3e-5)
 
     def encode_image(self, x):
         return self.content_encoder(x)
@@ -137,6 +136,13 @@ class VGG(Model):
 
     def call(self, x):
         return self.model(x)
+
+
+@tf.function
+def reparametrize(mu, logvar):
+    z = tf.random.normal(mu.shape)
+    z = mu + z * tf.exp(logvar * 0.5)
+    return z
 
 
 def make_discriminator_encoder_base():
