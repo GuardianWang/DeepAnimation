@@ -1,9 +1,9 @@
-from utils import *
-from model import *
-from dataset import *
-from config import *
-from loss import *
-from interpolation import test_circle_sampling
+from vae.utils import *
+from vae.model import *
+from vae.dataset import *
+from vae.config import *
+from vae.loss import *
+from vae.interpolation import test_circle_sampling
 
 import numpy as np
 from tqdm import tqdm

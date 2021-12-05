@@ -1,4 +1,4 @@
-from model import VAE
+from vae.model import VAE
 
 import numpy as np
 import tensorflow as tf

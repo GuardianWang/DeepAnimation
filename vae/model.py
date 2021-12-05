@@ -1,7 +1,7 @@
 """
 Brown CSCI 1470/2470 Deep Learning homework 5
 """
-from utils import load_weights
+from vae.utils import load_weights
 
 import tensorflow as tf
 from tensorflow.keras import Sequential
