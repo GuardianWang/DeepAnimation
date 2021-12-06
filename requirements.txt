@@ -5,8 +5,10 @@ more_itertools==8.10.0
 moviepy==1.0.3
 networkx==2.3
 numpy==1.21.4
+opencv_python==4.5.4.60
 Pillow==8.4.0
 Shapely==1.8.0
+svgpathtools==1.4.4
 tensorflow==2.3.0
 torch==1.10.0
 tqdm==4.48.2
