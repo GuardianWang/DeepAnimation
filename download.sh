@@ -12,7 +12,7 @@ gdrive_download 1lD9vwkSZ7gNHg3vBwRIPCjDgeP-3P8UX transformed_svgs.zip
 gdrive_download 1wSTmMs_kxHFAkSo2ewC_hbuC44oI5Bdg transformed_pngs.zip
 
 echo "Download done. Unzipping..."
-unzip icons.zip icons
+unzip icons.zip -d icons
 unzip transformed_svgs.zip
-unzip transformed_pngs.zip pngs
+unzip transformed_pngs.zip -d pngs
 echo "Done."
