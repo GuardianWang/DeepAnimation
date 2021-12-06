@@ -10,10 +10,11 @@ def generator_content_loss(real, fake, content_model):
         from_logits=True,
         reduction=Reduction.SUM,
     )
-    real_o = sigmoid(content_model(real))
-    fake_o = sigmoid(content_model(fake))
-    loss = bce_fn(real_o, fake_o) * real_o.shape[-1] / real_o.shape[0]
-    # loss = tf.reduce_mean(mean_absolute_error(real_o, fake_o))
+    real_o = content_model(real)
+    fake_o = content_model(fake)
+    # real_o, fake_o = sigmoid(real_o), sigmoid(fake_o)
+    # loss = bce_fn(real_o, fake_o) * real_o.shape[-1] / real_o.shape[0]
+    loss = tf.reduce_mean(mean_absolute_error(real_o, fake_o))
     return loss
 
 
