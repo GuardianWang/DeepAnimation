@@ -62,7 +62,7 @@ def train_epoch(model, data, content_model):
         pbar.update()
         pbar.set_postfix(losses)
 
-        vis_generate_images(model)
+        vis_generate_images(model, batch_data[1])
 
 
 def train(data_path):

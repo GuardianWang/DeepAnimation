@@ -94,16 +94,16 @@ class Generator(Model):
             Conv2DTranspose(128, (5, 5), padding='same', use_bias=False),  # [7, 7, 128]
             BatchNormalization(),
             LeakyReLU(),
-            Conv2DTranspose(64, (3, 3), (2, 2), padding='same', use_bias=False),  # [14, 14, 64]
+            Conv2DTranspose(64, (5, 5), (2, 2), padding='same', use_bias=False),  # [14, 14, 64]
             BatchNormalization(),
             LeakyReLU(),
-            Conv2DTranspose(32, (3, 3), (2, 2), padding='same', use_bias=False),  # [28, 28, 32]
+            Conv2DTranspose(32, (5, 5), (2, 2), padding='same', use_bias=False),  # [28, 28, 32]
             BatchNormalization(),
             LeakyReLU(),
-            Conv2DTranspose(16, (3, 3), (2, 2), padding='same', use_bias=False),  # [56, 56, 16]
+            Conv2DTranspose(16, (5, 5), (2, 2), padding='same', use_bias=False),  # [56, 56, 16]
             BatchNormalization(),
             LeakyReLU(),
-            Conv2DTranspose(3, (3, 3), (2, 2), padding='same', use_bias=False, activation='sigmoid'),  # [112, 112, 3]
+            Conv2DTranspose(3, (5, 5), (2, 2), padding='same', use_bias=False, activation='sigmoid'),  # [112, 112, 3]
         ])
 
     def call(self, x, training=True, mask=None):
