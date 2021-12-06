@@ -3,7 +3,7 @@ from tensorflow.keras.losses import mean_absolute_error, binary_crossentropy, Bi
 from tensorflow import sigmoid
 
 
-@tf.function
+# @tf.function
 def generator_content_loss(real, fake, content_model):
 
     bce_fn = BinaryCrossentropy(

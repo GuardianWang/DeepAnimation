@@ -8,7 +8,7 @@ import tensorflow as tf
 from tqdm import tqdm, trange
 
 
-@tf.function
+# @tf.function
 def train_batch(model: VAEGAN, data, content_model):
     # diff = data[0] - data[1]
     with tf.GradientTape() as g_tape, tf.GradientTape() as d_tape, tf.GradientTape() as e_tape:

@@ -11,8 +11,7 @@ def vis_generate_images(model, data_input=None, save=True, plot=False, **kwargs)
     else:
         imgs = model.random_generate(n_imgs)
 
-    # white is 0
-    imgs = 0.5 * (-imgs + 1.)
+    imgs = 0.5 * (imgs + 1.)
 
     for i in range(n_imgs):
         plt.subplot(4, 4, i + 1)

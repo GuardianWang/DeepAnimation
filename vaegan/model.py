@@ -150,8 +150,8 @@ class VGG(Model):
         return model
 
     def call(self, x, training=True, mask=None):
-        x *= 255.
-        x = vgg16.preprocess_input(x)
+        # x *= 255.
+        # x = vgg16.preprocess_input(x)
         return self.model(x)
 
 
