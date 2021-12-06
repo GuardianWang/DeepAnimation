@@ -25,30 +25,33 @@ class VAEGAN(Model):
         self.optim_g = Adam(1e-4)
         self.optim_d = Adam(3e-5)
 
-    def encode_image(self, x):
-        return self.content_encoder(x)
+    def encode_image(self, x, training=True, mask=None):
+        return self.content_encoder(x, training=training, mask=mask)
 
-    def encode_motion(self, x):
-        return self.motion_encoder(x)
+    def encode_motion(self, x, training=True, mask=None):
+        return self.motion_encoder(x, training=training, mask=mask)
 
-    def generate(self, x, is_x_image=True, m=None, is_m_image=True):
+    def generate(self, x, m=None, training=True, mask=None):
+        is_x_image = True if len(x.shape) == 4 else False
+        is_m_image = True if m is not None and len(m.shape) == 4 else False
+
         if is_x_image:
-            x, _, _ = self.encode_image(x)
+            x, _, _ = self.encode_image(x, training=training, mask=mask)
 
         if m is None:
             m = tf.random.normal([x.shape[0], self.motion_latent_size])
         elif is_m_image:
-            m, _, _ = self.encode_motion(m)
+            m, _, _ = self.encode_motion(m, training=training, mask=mask)
 
         x = self.concat([x, m])
-        return self.generator(x)
+        return self.generator(x, training=training, mask=mask)
 
-    def random_generate(self, batch_sz):
+    def random_generate(self, batch_sz, training=True, mask=None):
         x = tf.random.normal([batch_sz, self.content_latent_size + self.motion_latent_size])
-        return self.generator(x)
+        return self.generator(x, training=training, mask=mask)
 
-    def discriminate(self, x):
-        return self.discriminator(x)
+    def discriminate(self, x, training=True, mask=None):
+        return self.discriminator(x, training=training, mask=mask)
 
     @property
     def generator_encoder_trainable_vars(self):
@@ -74,7 +77,7 @@ class EncoderHead(Model):
         self.mu_layer = Dense(self.latent_size)
         self.logvar_layer = Dense(self.latent_size)
 
-    def call(self, x):
+    def call(self, x, training=True, mask=None):
         mu = self.mu_layer(x)
         logvar = self.logvar_layer(x)
         x = reparametrize(mu, logvar)
@@ -100,10 +103,10 @@ class Generator(Model):
             Conv2DTranspose(16, (3, 3), (2, 2), padding='same', use_bias=False),  # [56, 56, 16]
             BatchNormalization(),
             LeakyReLU(),
-            Conv2DTranspose(3, (3, 3), (2, 2), padding='same', use_bias=False, activation='tanh'),  # [112, 112, 3]
+            Conv2DTranspose(3, (3, 3), (2, 2), padding='same', use_bias=False, activation='sigmoid'),  # [112, 112, 3]
         ])
 
-    def call(self, x):
+    def call(self, x, training=True, mask=None):
         return self.model(x)
 
 
@@ -114,7 +117,7 @@ class Discriminator(Model):
         self.base_model = make_discriminator_encoder_base()
         self.discriminator_head = Dense(1)
 
-    def call(self, x):
+    def call(self, x, training=True, mask=None):
         x = self.base_model(x)
         return self.discriminator_head(x)
 
@@ -126,7 +129,7 @@ class Encoder(Model):
         self.base_model = make_discriminator_encoder_base()
         self.encoder_head = EncoderHead(latent_size)
 
-    def call(self, x):
+    def call(self, x, training=True, mask=None):
         x = self.base_model(x)
         return self.encoder_head(x)
 
@@ -146,7 +149,7 @@ class VGG(Model):
         model = tf.keras.Model([vgg.input], outputs)
         return model
 
-    def call(self, x):
+    def call(self, x, training=True, mask=None):
         x *= 255.
         x = vgg16.preprocess_input(x)
         return self.model(x)

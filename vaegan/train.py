@@ -1,6 +1,7 @@
 from vaegan.model import VAEGAN, VGG
 from vaegan.dataset import load_toy_dataset, make_dataset
 from vaegan.loss import *
+from vaegan.visualize import *
 
 import tensorflow as tf
 
@@ -12,7 +13,7 @@ def train_batch(model: VAEGAN, data, content_model):
     # diff = data[0] - data[1]
     with tf.GradientTape() as g_tape, tf.GradientTape() as d_tape, tf.GradientTape() as e_tape:
         latent_img, mu_img, logvar_img = model.encode_image(data[1])
-        fake_images = model.generate(x=latent_img, is_x_image=False, m=None)
+        fake_images = model.generate(x=latent_img, m=None)
         fake_images_z = model.random_generate(data[0].shape[0])
 
         d_real = model.discriminate(data[0])
@@ -60,6 +61,8 @@ def train_epoch(model, data, content_model):
         losses = {k: v.numpy() for k, v in losses.items()}
         pbar.update()
         pbar.set_postfix(losses)
+
+        vis_generate_images(model)
 
 
 def train(data_path):
