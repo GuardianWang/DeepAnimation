@@ -103,7 +103,7 @@ class Generator(Model):
             Conv2DTranspose(16, (5, 5), (2, 2), padding='same', use_bias=False),  # [56, 56, 16]
             BatchNormalization(),
             LeakyReLU(),
-            Conv2DTranspose(3, (5, 5), (2, 2), padding='same', use_bias=False, activation='sigmoid'),  # [112, 112, 3]
+            Conv2DTranspose(3, (5, 5), (2, 2), padding='same', use_bias=False, activation='tanh'),  # [112, 112, 3]
         ])
 
     def call(self, x, training=True, mask=None):
@@ -164,25 +164,31 @@ def reparametrize(mu, logvar):
 
 def make_discriminator_encoder_base():
     model = Sequential([
-            Conv2D(32, (5, 5), (2, 2), padding='same'),  # [56, 56, 32]
-            LeakyReLU(),
-            Dropout(0.3),
-            Conv2D(64, (3, 3), (2, 2), padding='same'),  # [28, 28, 64]
-            LeakyReLU(),
-            Dropout(0.3),
-            Conv2D(128, (3, 3), (2, 2), padding='same'),  # [14, 14, 128]
-            LeakyReLU(),
-            Dropout(0.3),
-            Conv2D(256, (3, 3), (2, 2), padding='same'),  # [7, 7, 256]
-            LeakyReLU(),
-            Dropout(0.3),
-            Conv2D(512, (3, 3), (2, 2), padding='same'),  # [3, 3, 512]
-            LeakyReLU(),
-            Dropout(0.3),
-            Conv2D(1024, (3, 3), (2, 2), padding='same'),  # [1, 1, 1024]
-            LeakyReLU(),
-            Dropout(0.3),
-            Flatten(),
+        Conv2D(32, (5, 5), (2, 2), padding='same'),  # [56, 56, 32]
+        BatchNormalization(),
+        LeakyReLU(),
+        # Dropout(0.3),
+        Conv2D(64, (3, 3), (2, 2), padding='same'),  # [28, 28, 64]
+        BatchNormalization(),
+        LeakyReLU(),
+        # Dropout(0.3),
+        Conv2D(128, (3, 3), (2, 2), padding='same'),  # [14, 14, 128]
+        BatchNormalization(),
+        LeakyReLU(),
+        # Dropout(0.3),
+        Conv2D(256, (3, 3), (2, 2), padding='same'),  # [7, 7, 256]
+        BatchNormalization(),
+        LeakyReLU(),
+        # Dropout(0.3),
+        Conv2D(512, (3, 3), (2, 2), padding='same'),  # [3, 3, 512]
+        BatchNormalization(),
+        LeakyReLU(),
+        # Dropout(0.3),
+        Conv2D(1024, (3, 3), (2, 2), padding='same'),  # [1, 1, 1024]
+        BatchNormalization(),
+        LeakyReLU(),
+        # Dropout(0.3),
+        Flatten(),
         ])
 
     return model

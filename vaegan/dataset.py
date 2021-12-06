@@ -79,7 +79,7 @@ def configure_for_performance(ds, batch_size=4):
 
 def make_dataset(frame_dir):
     ds = load_list_ds(frame_dir)
-    rescale = tf.keras.layers.experimental.preprocessing.Rescaling(1. / 255.)
+    rescale = tf.keras.layers.experimental.preprocessing.Rescaling(scale=1. / 127.5, offset=-1.)
     resize = tf.keras.layers.experimental.preprocessing.Resizing(112, 112)
     ds = ds.map(process_path, num_parallel_calls=tf.data.experimental.AUTOTUNE)
     ds = ds.map(lambda x, y: (rescale(resize(x)), rescale(resize(y))), num_parallel_calls=tf.data.experimental.AUTOTUNE)
@@ -90,6 +90,7 @@ def make_dataset(frame_dir):
 if __name__ == "__main__":
     # frame_dir = r"C:\Users\zichu\Downloads\transformed_svgs"
     frame_dir = r"C:/Users/zichu/Downloads/icons/target_svg/pngs"
+    # frame_dir = "../icon_svg/pngs"
     # p = Path(frame_dir)
     # ds = DataSet(list(map(str, p.glob("*.png"))))
     ds = make_dataset()
