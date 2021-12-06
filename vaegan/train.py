@@ -53,16 +53,19 @@ def train_batch(model: VAEGAN, data, content_model):
     return losses
 
 
-def train_epoch(model, data, content_model):
+def train_epoch(model, data, content_model, **kwargs):
     pbar = tqdm(total=len(data))
-    for batch_data in data:
+    for i, batch_data in enumerate(data):
         losses = train_batch(model, batch_data, content_model)
 
         losses = {k: v.numpy() for k, v in losses.items()}
+        losses.update(kwargs["epoch_info"])
         pbar.update()
         pbar.set_postfix(losses)
 
-        vis_generate_images(model, batch_data[1])
+        if i % 20 == 0:
+            vis_generate_images(model, batch_data[1],
+                                epoch=kwargs["epoch_info"]["cur_epoch"], batch=i + 1)
 
 
 def train(data_path):
@@ -71,7 +74,8 @@ def train(data_path):
     data = make_dataset(data_path)
     n_epochs = 100
     for i in trange(n_epochs):
-        train_epoch(vaegan, data, vgg)
+        epoch_info = {'cur_epoch': i + 1}
+        train_epoch(vaegan, data, vgg, epoch_info=epoch_info)
 
 
 if __name__ == "__main__":

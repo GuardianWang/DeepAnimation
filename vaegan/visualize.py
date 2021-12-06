@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
+from pathlib import Path
 
 
-def vis_generate_images(model, data_input=None):
+def vis_generate_images(model, data_input=None, save=True, plot=False, **kwargs):
     fig_imgs_sz = [4, 4]
     n_imgs = fig_imgs_sz[0] * fig_imgs_sz[1]
     if data_input is not None:
@@ -9,15 +10,19 @@ def vis_generate_images(model, data_input=None):
         imgs = model.generate(x=data_input[:n_imgs], training=False)
     else:
         imgs = model.random_generate(n_imgs)
-    fig = plt.figure()
 
     for i in range(n_imgs):
         plt.subplot(4, 4, i + 1)
         plt.imshow(imgs[i].numpy())
         plt.axis('off')
 
-    plt.savefig(f'image_at_epoch.png')
-    # plt.show()
+    if save:
+        p = Path("vaegan_outputs")
+        p.mkdir(exist_ok=True)
+        p = p / f"epoch_{kwargs['epoch']:04d}_batch_{kwargs['batch']:04d}"
+        plt.savefig(str(p))
+    if plot:
+        plt.show()
 
 
 if __name__ == "__main__":
