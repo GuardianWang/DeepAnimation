@@ -32,6 +32,7 @@ class VAEGAN(Model):
         return self.motion_encoder(x, training=training, mask=mask)
 
     def generate(self, x, m=None, training=True, mask=None):
+        ori_x = x
         is_x_image = True if len(x.shape) == 4 else False
         is_m_image = True if m is not None and len(m.shape) == 4 else False
 
@@ -44,7 +45,7 @@ class VAEGAN(Model):
             m, _, _ = self.encode_motion(m, training=training, mask=mask)
 
         x = self.concat([x, m])
-        return self.generator(x, training=training, mask=mask)
+        return self.generator(x, ori_x, training=training, mask=mask)
 
     def random_generate(self, batch_sz, training=True, mask=None):
         x = tf.random.normal([batch_sz, self.content_latent_size + self.motion_latent_size])
@@ -103,11 +104,13 @@ class Generator(Model):
             Conv2DTranspose(16, (5, 5), (2, 2), padding='same', use_bias=False),  # [56, 56, 16]
             BatchNormalization(),
             LeakyReLU(),
-            Conv2DTranspose(3, (5, 5), (2, 2), padding='same', use_bias=False, activation='tanh'),  # [112, 112, 3]
+            Conv2DTranspose(3, (5, 5), (2, 2), padding='same', use_bias=False),  # [112, 112, 3]
         ])
+        self.head = Conv2D(3, (3, 3), padding='same', activation='tanh')
 
-    def call(self, x, training=True, mask=None):
-        return self.model(x)
+    def call(self, x, ori, training=True, mask=None):
+        x = ori + self.model(x)
+        return self.head(x)
 
 
 class Discriminator(Model):
