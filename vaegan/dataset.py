@@ -6,7 +6,7 @@ from math import floor, ceil
 import re
 
 
-def load_test_dataset():
+def load_toy_dataset():
     x = tf.data.Dataset.from_tensor_slices(tf.random.normal([4, 112, 112, 3]))
     x = x.batch(2)
 
@@ -77,8 +77,7 @@ def configure_for_performance(ds, batch_size=4):
     return ds
 
 
-def make_dataset():
-    frame_dir = r"C:/Users/zichu/Downloads/icons/target_svg/pngs"
+def make_dataset(frame_dir):
     ds = load_list_ds(frame_dir)
     rescale = tf.keras.layers.experimental.preprocessing.Rescaling(1. / 255.)
     resize = tf.keras.layers.experimental.preprocessing.Resizing(112, 112)

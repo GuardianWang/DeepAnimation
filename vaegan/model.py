@@ -2,7 +2,7 @@
 For normal image formats
 """
 import tensorflow as tf
-from tensorflow.keras.applications import VGG16
+from tensorflow.keras.applications import VGG16, vgg16
 from tensorflow.keras import Model, Sequential, layers
 from tensorflow.keras.layers import LeakyReLU, Reshape, Conv2DTranspose, Conv2D, BatchNormalization, \
     Dense, Flatten, Dropout, Concatenate
@@ -17,10 +17,11 @@ class VAEGAN(Model):
         self.generator = Generator()
         self.discriminator = Discriminator(latent_size=content_latent_size)
         self.content_encoder = Encoder(latent_size=content_latent_size)
-        self.motion_encoder = Encoder(latent_size=motion_latent_size)
+        self.motion_encoder = None  # Encoder(latent_size=motion_latent_size)
 
         self.concat = Concatenate()
 
+        self.optim_e = Adam(1e-4)
         self.optim_g = Adam(1e-4)
         self.optim_d = Adam(3e-5)
 
@@ -30,17 +31,20 @@ class VAEGAN(Model):
     def encode_motion(self, x):
         return self.motion_encoder(x)
 
-    @tf.function
     def generate(self, x, is_x_image=True, m=None, is_m_image=True):
         if is_x_image:
-            x = self.encode_image(x)
+            x, _, _ = self.encode_image(x)
 
         if m is None:
             m = tf.random.normal([x.shape[0], self.motion_latent_size])
         elif is_m_image:
-            m = self.encode_motion(m)
+            m, _, _ = self.encode_motion(m)
 
         x = self.concat([x, m])
+        return self.generator(x)
+
+    def random_generate(self, batch_sz):
+        x = tf.random.normal([batch_sz, self.content_latent_size + self.motion_latent_size])
         return self.generator(x)
 
     def discriminate(self, x):
@@ -52,6 +56,14 @@ class VAEGAN(Model):
         res.extend(self.generator.trainable_variables)
         res.extend(self.content_encoder.trainable_variables)
         res.extend(self.motion_encoder.trainable_variables)
+        return res
+
+    @property
+    def encoder_trainable_params(self):
+        res = []
+        res.extend(self.content_encoder.trainable_variables)
+        if self.motion_encoder is not None:
+            res.extend(self.motion_encoder.trainable_variables)
         return res
 
 
@@ -67,7 +79,7 @@ class EncoderHead(Model):
         logvar = self.logvar_layer(x)
         x = reparametrize(mu, logvar)
 
-        return x
+        return x, mu, logvar
 
 
 class Generator(Model):
@@ -135,6 +147,8 @@ class VGG(Model):
         return model
 
     def call(self, x):
+        x *= 255.
+        x = vgg16.preprocess_input(x)
         return self.model(x)
 
 
@@ -176,5 +190,7 @@ if __name__ == "__main__":
     g = Generator()
     d = Discriminator()
     x = g(noise)
+    print(x.shape)
     x = d(x)
     print(x)
+    tf.keras.losses.binary_crossentropy()
