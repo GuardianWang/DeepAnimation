@@ -69,7 +69,7 @@ def process_path(path):
     return img, first_img
 
 
-def configure_for_performance(ds, batch_size=512):
+def configure_for_performance(ds, batch_size=256):
     ds = ds.cache()
     ds = ds.shuffle(buffer_size=100)
     ds = ds.batch(batch_size)
