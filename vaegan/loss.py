@@ -51,3 +51,24 @@ def discriminator_loss(real, fake):
 def kl_loss(mu, logvar):
     loss = -0.5 * tf.reduce_mean(tf.reduce_sum(1 + logvar - tf.square(mu) - tf.exp(logvar), axis=-1))
     return loss
+
+
+class LossHandler:
+    def __init__(self):
+        self.losses = dict()
+        self.running_batch_sz = 0
+
+    def update(self, losses, batch_sz):
+        if not self.losses:
+            self.losses = losses.copy()
+        else:
+            for k in self.losses.keys():
+                self.losses[k] = self.running_mean(self.losses[k], losses[k], batch_sz)
+                self.running_batch_sz += batch_sz
+
+    def running_mean(self, old, cur, batch_sz):
+        new_total_batch = self.running_batch_sz + batch_sz
+        return old * (self.running_batch_sz / new_total_batch) + cur * (batch_sz / new_total_batch)
+
+    def items(self):
+        return self.losses.items()
