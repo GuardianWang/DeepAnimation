@@ -1,3 +1,14 @@
+import tensorflow as tf
+gpus = tf.config.experimental.list_physical_devices('GPU')
+if gpus:
+    try:
+        for gpu in gpus:
+            tf.config.experimental.set_memory_growth(gpus[0], True)
+            tf.config.experimental.set_virtual_device_configuration(gpus[0], [
+                tf.config.experimental.VirtualDeviceConfiguration(memory_limit=14000)])
+    except RuntimeError as e:
+        print(e)
+
 from vaegan.model import VAE
 from vaegan.dataset import load_toy_dataset, make_dataset
 from vaegan.loss import *
@@ -5,7 +16,6 @@ from vaegan.visualize import *
 from vaegan.utils import *
 from vaegan.optimizers import *
 
-import tensorflow as tf
 from tqdm import tqdm, trange
 from pathlib import Path
 from datetime import datetime
@@ -62,7 +72,7 @@ def train(data_path):
     train_writer = get_writer()
 
     # load_weights(vae, [1, 112, 112, 3], name='vae', epoch=0, batch=0)
-    for i in trange(n_epochs):
+    for i in range(n_epochs):
         epoch_info = {'epoch': f"{i + 1}/{n_epochs}"}
         train_epoch(vae, data, epoch_info=epoch_info,
                     optimizer=opt, epoch=i + 1, writer=train_writer)
