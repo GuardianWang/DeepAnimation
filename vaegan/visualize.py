@@ -22,7 +22,7 @@ def vis_save(imgs, sub_r, sub_c, save=True, save_dir="", plot=False, **kwargs):
         for j in range(sub_c):
             ax = axes[i][j]
             ax.imshow(imgs[i])
-    plt.axis('off')
+            plt.axis('off')
 
     if save:
         p = Path(save_dir)
