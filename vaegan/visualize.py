@@ -19,8 +19,8 @@ def vis_save(imgs, sub_r, sub_c, save=True, save_dir="", plot=False, **kwargs):
     n_imgs = imgs.shape[0]
     fig, axes = plt.subplots(sub_r, sub_c)
     for n in range(n_imgs):
-        i = n_imgs // sub_c
-        j = n_imgs % sub_c
+        i = n // sub_c
+        j = n % sub_c
         ax = axes[i][j]
         ax.imshow(imgs[n])
         ax.axis('off')
