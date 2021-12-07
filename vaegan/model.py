@@ -16,9 +16,6 @@ class VAE(Model):
         self.encoder = Encoder(latent_size=latent_size)
         self.decoder = Generator()
 
-        self.lr = 1e-3
-        self.optimizer = tf.keras.optimizers.Adam(learning_rate=self.lr)
-
     def encode(self, x, training=True, mask=None):
         return self.encoder(x, training=training, mask=mask)
 

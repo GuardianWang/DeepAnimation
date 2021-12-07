@@ -3,13 +3,14 @@ from vaegan.dataset import load_toy_dataset, make_dataset
 from vaegan.loss import *
 from vaegan.visualize import *
 from vaegan.utils import *
+from vaegan.optimizers import *
 
 import tensorflow as tf
-
 from tqdm import tqdm, trange
 
 
-def train_batch(model: VAE, data):
+def train_batch(model: VAE, data, **kwargs):
+    opt = kwargs["optimizer"]
     with tf.GradientTape() as e_tape:
         latent_img, mu_img, logvar_img = model.encode(data[0])
         reconstruct_img = model.decode(latent_img)
@@ -19,7 +20,7 @@ def train_batch(model: VAE, data):
         e_loss = e_kl + e_c
 
     grad_e = e_tape.gradient(e_loss, model.trainable_variables)
-    model.optimizer.apply_gradients(zip(grad_e, model.trainable_variables))
+    opt.apply_gradients(zip(grad_e, model.trainable_variables))
 
     losses = dict()
     losses["e_kl"] = e_kl
@@ -31,7 +32,7 @@ def train_batch(model: VAE, data):
 def train_epoch(model, data, **kwargs):
     pbar = tqdm(total=len(data))
     for i, batch_data in enumerate(data):
-        losses = train_batch(model, batch_data)
+        losses = train_batch(model, batch_data, **kwargs)
 
         losses = {k: v.numpy() for k, v in losses.items()}
         losses.update(kwargs["epoch_info"])
@@ -47,14 +48,17 @@ def train(data_path):
     vae = VAE(latent_size=512)
     data = make_dataset(data_path)
     n_epochs = 100
+    opt = get_adam()
     # load_weights(vae, [1, 112, 112, 3], name='vae', epoch=0, batch=0)
     for i in trange(n_epochs):
         epoch_info = {'cur_epoch': i + 1}
-        train_epoch(vae, data, epoch_info=epoch_info)
-        save_weights(vae, name="vae", epoch=0, batch=0)
+        train_epoch(vae, data, epoch_info=epoch_info, optimizer=opt)
+
+        if i % 200 == 0:
+            save_weights(vae, name="vae", epoch=i + 1, batch=0)
 
 
 if __name__ == "__main__":
-    frame_dir = r"C:/Users/zichu/Downloads/icons/target_svg/pngs"
+    frame_dir = r"../pngs"
     # images = load_toy_dataset()
     train(frame_dir)
