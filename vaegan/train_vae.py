@@ -3,9 +3,7 @@ gpus = tf.config.experimental.list_physical_devices('GPU')
 if gpus:
     try:
         for gpu in gpus:
-            # tf.config.experimental.set_memory_growth(gpu, True)
-            tf.config.experimental.set_virtual_device_configuration(gpu, [
-                tf.config.experimental.VirtualDeviceConfiguration(memory_limit=9000)])
+            tf.config.experimental.set_memory_growth(gpu, True)
     except RuntimeError as e:
         print(e)
 
@@ -55,7 +53,7 @@ def train_epoch(model, data, **kwargs):
         pbar.update()
         pbar.set_postfix(losses)
 
-        if i % 50 == 0:
+        if i == 0:
             vis_vae_images(model, batch_data[0],
                            epoch=kwargs["epoch"], batch=i + 1, writer=train_writer, plot=False)
 
