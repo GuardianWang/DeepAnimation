@@ -9,6 +9,7 @@ import tensorflow as tf
 from tqdm import tqdm, trange
 
 
+@tf.function
 def train_batch(model: VAE, data, **kwargs):
     opt = kwargs["optimizer"]
     with tf.GradientTape() as e_tape:
@@ -59,6 +60,6 @@ def train(data_path):
 
 
 if __name__ == "__main__":
-    frame_dir = r"../pngs"
+    frame_dir = "../pngs"
     # images = load_toy_dataset()
     train(frame_dir)
