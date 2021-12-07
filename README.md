@@ -46,3 +46,19 @@ different domains.
 
 We also notice that the model tends to generate 3 and 6, which deserves 
 more investigation.
+
+## Environment Variable
+
+On Linux:
+```bash
+export PYTHONPATH='${PYTHONPATH}:/path/to/DeepAnimation'
+```
+On Windows:
+```bash
+set PYTHONPATH=%PYTHONPATH%;\path\to\DeepAnimation\
+```
+On Colab:
+```python
+import os
+os.environ['PYTHONPATH'] += ':/path/to/DeepAnimation'
+```
