@@ -73,7 +73,7 @@ def configure_for_performance(ds, batch_size=512):
     ds = ds.cache()
     ds = ds.shuffle(buffer_size=100)
     ds = ds.batch(batch_size)
-    ds = ds.prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
+    ds = ds.prefetch(buffer_size=8)
     return ds
 
 
