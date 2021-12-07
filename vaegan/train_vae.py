@@ -42,18 +42,18 @@ def train_epoch(model, data, **kwargs):
 
         if i % 20 == 0:
             vis_vae_images(model, batch_data[0],
-                           epoch=kwargs["epoch_info"]["cur_epoch"], batch=i + 1)
+                           epoch=kwargs["epoch"], batch=i + 1)
 
 
 def train(data_path):
     vae = VAE(latent_size=512)
     data = make_dataset(data_path)
-    n_epochs = 100
+    n_epochs = 3000
     opt = get_adam()
     # load_weights(vae, [1, 112, 112, 3], name='vae', epoch=0, batch=0)
     for i in trange(n_epochs):
-        epoch_info = {'cur_epoch': i + 1}
-        train_epoch(vae, data, epoch_info=epoch_info, optimizer=opt)
+        epoch_info = {'epoch': f"{i + 1}/{n_epochs}"}
+        train_epoch(vae, data, epoch_info=epoch_info, optimizer=opt, epoch=i + 1)
 
         if i % 200 == 0:
             save_weights(vae, name="vae", epoch=i + 1, batch=0)
