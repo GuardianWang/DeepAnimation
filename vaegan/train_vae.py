@@ -39,7 +39,7 @@ def train_epoch(model, data, **kwargs):
         pbar.set_postfix(losses)
 
         if i % 20 == 0:
-            vis_vae_images(model, batch_data[1],
+            vis_vae_images(model, batch_data[0],
                            epoch=kwargs["epoch_info"]["cur_epoch"], batch=i + 1)
 
 
