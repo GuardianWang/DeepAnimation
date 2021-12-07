@@ -2,6 +2,7 @@ from vaegan.model import VAE
 from vaegan.dataset import load_toy_dataset, make_dataset
 from vaegan.loss import *
 from vaegan.visualize import *
+from vaegan.utils import *
 
 import tensorflow as tf
 
@@ -43,12 +44,14 @@ def train_epoch(model, data, **kwargs):
 
 
 def train(data_path):
-    vae = VAE()
+    vae = VAE(latent_size=512)
     data = make_dataset(data_path)
     n_epochs = 100
+    # load_weights(vae, [1, 112, 112, 3], name='vae', epoch=0, batch=0)
     for i in trange(n_epochs):
         epoch_info = {'cur_epoch': i + 1}
         train_epoch(vae, data, epoch_info=epoch_info)
+        save_weights(vae, name="vae", epoch=0, batch=0)
 
 
 if __name__ == "__main__":
