@@ -34,23 +34,23 @@ def train_batch(model: VAE, data, **kwargs):
 
 def train_epoch(model, data, **kwargs):
     pbar = tqdm(total=len(data))
-    loss_handle = LossHandler()
+    loss_handler = LossHandler()
     train_writer = kwargs['writer']
     for i, batch_data in enumerate(data):
         losses = train_batch(model, batch_data, **kwargs)
 
         losses = {k: v.numpy() for k, v in losses.items()}
-        loss_handle.update(losses, batch_data[0].shape[0])
+        loss_handler.update(losses, batch_data[0].shape[0])
         losses.update(kwargs["epoch_info"])
         pbar.update()
         pbar.set_postfix(losses)
 
         if i % 50 == 0:
             vis_vae_images(model, batch_data[0],
-                           epoch=kwargs["epoch"], batch=i + 1)
+                           epoch=kwargs["epoch"], batch=i + 1, writer=train_writer, plot=False)
 
     with train_writer.as_default():
-        for k, v in loss_handle.items():
+        for k, v in loss_handler.items():
             tf.summary.scalar(k, v, step=kwargs['epoch'])
 
 
@@ -67,7 +67,7 @@ def train(data_path):
         train_epoch(vae, data, epoch_info=epoch_info,
                     optimizer=opt, epoch=i + 1, writer=train_writer)
 
-        if i % 200 == 0:
+        if i % 50 == 0:
             save_weights(vae, name="vae", epoch=i + 1, batch=0)
 
 
