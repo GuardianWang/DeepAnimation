@@ -6,10 +6,10 @@ from tensorflow import sigmoid
 @tf.function
 def generator_content_loss(real, fake, content_model):
 
-    bce_fn = BinaryCrossentropy(
-        from_logits=True,
-        reduction=Reduction.SUM,
-    )
+    # bce_fn = BinaryCrossentropy(
+    #     from_logits=True,
+    #     reduction=Reduction.SUM,
+    # )
     real_o = content_model(real)
     fake_o = content_model(fake)
     # real_o, fake_o = sigmoid(real_o), sigmoid(fake_o)
@@ -18,10 +18,21 @@ def generator_content_loss(real, fake, content_model):
     return loss
 
 
+def vae_content_loss(real, fake):
+    bce_fn = BinaryCrossentropy(
+        from_logits=False,
+        reduction=Reduction.SUM,
+    )
+    real = 0.5 * (real + 1.)
+    fake = 0.5 * (fake + 1.)
+    loss = bce_fn(real, fake) * real.shape[-1] / real.shape[0]
+    return loss
+
+
 @tf.function
 def generator_discriminator_loss(x, expect_true=True):
     label = tf.ones_like(x) if expect_true else tf.zeros_like(x)
-    return tf.reduce_mean(binary_crossentropy(label, x, from_logits=True))
+    return tf.reduce_mean(binary_crossentropy(label, x, from_logits=False))
 
 
 @tf.function

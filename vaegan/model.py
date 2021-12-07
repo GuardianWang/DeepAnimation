@@ -5,8 +5,29 @@ import tensorflow as tf
 from tensorflow.keras.applications import VGG16, vgg16
 from tensorflow.keras import Model, Sequential, layers
 from tensorflow.keras.layers import LeakyReLU, Reshape, Conv2DTranspose, Conv2D, BatchNormalization, \
-    Dense, Flatten, Dropout, Concatenate
+    Dense, Flatten, Dropout, Concatenate, UpSampling2D
 from tensorflow.keras.optimizers import Adam
+
+
+class VAE(Model):
+    def __init__(self, latent_size=100):
+        super().__init__()
+        self.latent_size = latent_size
+        self.encoder = Encoder(latent_size=latent_size)
+        self.decoder = Generator()
+
+        self.lr = 1e-3
+        self.optimizer = tf.keras.optimizers.Adam(learning_rate=self.lr)
+
+    def encode(self, x, training=True, mask=None):
+        return self.encoder(x, training=training, mask=mask)
+
+    def decode(self, x, training=True, mask=None):
+        return self.decoder(x, training=training, mask=mask)
+
+    def call(self, x, training=True, mask=None):
+        x, mu, logvar = self.encoder(x, training=training, mask=mask)
+        return self.decoder(x, training=training, mask=mask)
 
 
 class VAEGAN(Model):
@@ -91,19 +112,28 @@ class Generator(Model):
         self.model = Sequential([
             Dense(7 * 7 * 256),
             Reshape((7, 7, 256)),
-            Conv2DTranspose(128, (5, 5), padding='same', use_bias=False),  # [7, 7, 128]
-            BatchNormalization(),
+            Conv2D(128, (1, 1), padding='same'),
+            # Conv2DTranspose(128, (5, 5), padding='same', use_bias=False),  # [7, 7, 128]
+            BatchNormalization(momentum=0.8),
             LeakyReLU(),
-            Conv2DTranspose(64, (5, 5), (2, 2), padding='same', use_bias=False),  # [14, 14, 64]
-            BatchNormalization(),
+            UpSampling2D(interpolation='bilinear'),
+            Conv2D(64, (3, 3), padding='same'),
+            # Conv2DTranspose(64, (5, 5), (2, 2), padding='same', use_bias=False),  # [14, 14, 64]
+            BatchNormalization(momentum=0.8),
             LeakyReLU(),
-            Conv2DTranspose(32, (5, 5), (2, 2), padding='same', use_bias=False),  # [28, 28, 32]
-            BatchNormalization(),
+            UpSampling2D(interpolation='bilinear'),
+            Conv2D(32, (3, 3), padding='same'),
+            # Conv2DTranspose(32, (5, 5), (2, 2), padding='same', use_bias=False),  # [28, 28, 32]
+            BatchNormalization(momentum=0.8),
             LeakyReLU(),
-            Conv2DTranspose(16, (5, 5), (2, 2), padding='same', use_bias=False),  # [56, 56, 16]
-            BatchNormalization(),
+            UpSampling2D(interpolation='bilinear'),
+            Conv2D(16, (3, 3), padding='same'),
+            # Conv2DTranspose(16, (5, 5), (2, 2), padding='same', use_bias=False),  # [56, 56, 16]
+            BatchNormalization(momentum=0.8),
             LeakyReLU(),
-            Conv2DTranspose(3, (5, 5), (2, 2), padding='same', use_bias=False, activation='tanh'),  # [112, 112, 3]
+            UpSampling2D(interpolation='bilinear'),
+            Conv2D(3, (3, 3), padding='same', activation='tanh'),
+            # Conv2DTranspose(3, (5, 5), (2, 2), padding='same', use_bias=False, activation='tanh'),  # [112, 112, 3]
         ])
 
     def call(self, x, training=True, mask=None):
@@ -115,7 +145,7 @@ class Discriminator(Model):
         super().__init__()
         self.latent_size = latent_size
         self.base_model = make_discriminator_encoder_base()
-        self.discriminator_head = Dense(1)
+        self.discriminator_head = Dense(1, activation='sigmoid')
 
     def call(self, x, training=True, mask=None):
         x = self.base_model(x)
@@ -165,29 +195,29 @@ def reparametrize(mu, logvar):
 def make_discriminator_encoder_base():
     model = Sequential([
         Conv2D(32, (5, 5), (2, 2), padding='same'),  # [56, 56, 32]
-        BatchNormalization(),
+        BatchNormalization(momentum=0.8),
         LeakyReLU(),
-        # Dropout(0.3),
+        Dropout(0.3),
         Conv2D(64, (3, 3), (2, 2), padding='same'),  # [28, 28, 64]
-        BatchNormalization(),
+        BatchNormalization(momentum=0.8),
         LeakyReLU(),
-        # Dropout(0.3),
+        Dropout(0.3),
         Conv2D(128, (3, 3), (2, 2), padding='same'),  # [14, 14, 128]
-        BatchNormalization(),
+        BatchNormalization(momentum=0.8),
         LeakyReLU(),
-        # Dropout(0.3),
+        Dropout(0.3),
         Conv2D(256, (3, 3), (2, 2), padding='same'),  # [7, 7, 256]
-        BatchNormalization(),
+        BatchNormalization(momentum=0.8),
         LeakyReLU(),
-        # Dropout(0.3),
+        Dropout(0.3),
         Conv2D(512, (3, 3), (2, 2), padding='same'),  # [3, 3, 512]
-        BatchNormalization(),
+        BatchNormalization(momentum=0.8),
         LeakyReLU(),
-        # Dropout(0.3),
+        Dropout(0.3),
         Conv2D(1024, (3, 3), (2, 2), padding='same'),  # [1, 1, 1024]
-        BatchNormalization(),
+        BatchNormalization(momentum=0.8),
         LeakyReLU(),
-        # Dropout(0.3),
+        Dropout(0.3),
         Flatten(),
         ])
 
@@ -202,4 +232,3 @@ if __name__ == "__main__":
     print(x.shape)
     x = d(x)
     print(x)
-    tf.keras.losses.binary_crossentropy()
