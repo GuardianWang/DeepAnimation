@@ -4,12 +4,13 @@ from os import listdir
 from os.path import isfile, join
 import argparse
 from tqdm import tqdm
+from math import floor
 
 
 def extract_frames(input_folder_name, output_folder_name, gif_name, num_frames):
     with Image.open(input_folder_name + "/" + gif_name) as im:
         for i in range(num_frames):
-            im.seek(im.n_frames // num_frames * i)
+            im.seek(int(floor(im.n_frames / num_frames * i)))
             im.save('%s-%i.png' % (output_folder_name + "/pngs/" + gif_name.split(".")[0], i))
 
 
