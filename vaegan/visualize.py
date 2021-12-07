@@ -16,15 +16,14 @@ def vis_generate_images(model, data_input=None, save=True, plot=False, **kwargs)
 
 
 def vis_save(imgs, sub_r, sub_c, save=True, save_dir="", plot=False, **kwargs):
-
+    n_imgs = imgs.shape[0]
     fig, axes = plt.subplots(sub_r, sub_c)
-    img_id = 0
-    for i in range(sub_r):
-        for j in range(sub_c):
-            ax = axes[i][j]
-            ax.imshow(imgs[img_id])
-            img_id += 1
-            plt.axis('off')
+    for n in range(n_imgs):
+        i = n_imgs // sub_c
+        j = n_imgs % sub_c
+        ax = axes[i][j]
+        ax.imshow(imgs[n])
+        ax.axis('off')
 
     if save:
         p = Path(save_dir)
