@@ -10,6 +10,7 @@ except:
 import numpy as np
 from tqdm import tqdm
 from pathlib import Path
+from joblib import dump, load
 
 
 def get_latents(model: VAE, ds, save=True):
@@ -27,9 +28,21 @@ def get_latents(model: VAE, ds, save=True):
     return latents
 
 
-def tsne_fit(latents=None, load=False):
-    if load:
+def tsne_fit(latents=None, load_latents=True, load_tsne=False, save_tsne=True, save_transformed=True):
+    if load_latents:
         latents = np.load('latents/latents.npy')
+    if load_tsne:
+        tsne = load('latents/tsne.joblib')
+    else:
+        tsne = TSNE()
+        tsne.fit(latents)
+        if save_tsne:
+            dump(tsne, 'latents/tsne.joblib')
+
+    latents = tsne.embedding_
+    if save_transformed:
+        np.save('latents/tsne_latents.npy', latents)
+    return latents
 
 
 if __name__ == '__main__':
@@ -37,4 +50,4 @@ if __name__ == '__main__':
     vae = VAE(512)
     batch_size = 128
     ds = make_dataset(frame_dir, batch_size, shuffle=False, fmt='*.png')
-    get_latents(vae, ds)
+    # get_latents(vae, ds)
