@@ -47,9 +47,10 @@ class DataSet(Sequence):
         return img
 
 
-def load_list_ds(frame_dir):
+def load_list_ds(frame_dir, fmt="*.png"):
     p = Path(frame_dir)
-    list_ds = tf.data.Dataset.list_files(str(p / "*.png"))
+    files = list(map(str, p.glob(fmt)))
+    list_ds = tf.data.Dataset.from_tensor_slices(files)
 
     return list_ds
 
@@ -69,21 +70,22 @@ def process_path(path):
     return img, first_img
 
 
-def configure_for_performance(ds, batch_size=128):
+def configure_for_performance(ds, batch_size=128, shuffle=True):
     ds = ds.cache()
-    ds = ds.shuffle(buffer_size=100)
+    if shuffle:
+        ds = ds.shuffle(buffer_size=100)
     ds = ds.batch(batch_size)
     ds = ds.prefetch(buffer_size=8)
     return ds
 
 
-def make_dataset(frame_dir, batch_size=128):
-    ds = load_list_ds(frame_dir)
+def make_dataset(frame_dir, batch_size=128, fmt='*.png', shuffle=True):
+    ds = load_list_ds(frame_dir, fmt=fmt)
     rescale = tf.keras.layers.experimental.preprocessing.Rescaling(scale=1. / 127.5, offset=-1.)
     resize = tf.keras.layers.experimental.preprocessing.Resizing(112, 112)
     ds = ds.map(process_path, num_parallel_calls=tf.data.experimental.AUTOTUNE)
     ds = ds.map(lambda x, y: (rescale(resize(x)), rescale(resize(y))), num_parallel_calls=tf.data.experimental.AUTOTUNE)
-    ds = configure_for_performance(ds, batch_size)
+    ds = configure_for_performance(ds, batch_size, shuffle=shuffle)
     return ds
 
 

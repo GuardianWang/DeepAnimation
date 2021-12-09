@@ -129,7 +129,7 @@ def save_img(samples: np.ndarray, batch_size, img_folder='.', is_gray=True):
             file = os.path.join(img_sub_folder, f"{n_frame:03d}.png")
             frame.save(file)
         gif_file = os.path.join(img_sub_folder, f"gif{n_img:03d}.gif")
-        frames[0].save(gif_file, save_all=True, append_images=frames[1:], loop=0, duration=5)
+        frames[0].save(gif_file, save_all=True, append_images=frames[1:], loop=0, duration=1)
 
 
 def test_circle_sampling(model: VAE, data: tf.Tensor, img_folder='.'):

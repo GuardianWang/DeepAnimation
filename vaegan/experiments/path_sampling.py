@@ -31,12 +31,28 @@ def slerp(z1, z2, n):
     return z
 
 
+def arithmetic_sample(from1, to1, from2, n):
+    return slerp(from2, arithmetic(from1, to1, from2), n)
+
+
+def arithmetic_img_gif(from_img, gif):
+    from_img = tf.expand_dims(from_img, 1)
+    gif = tf.expand_dims(gif, 0)
+    to_gif = arithmetic(gif[:, :1, ...], gif, from_img)
+    to_gif = tf.reshape(to_gif, [-1] + list(to_gif.shape[2:]))
+    return to_gif
+
+
+def arithmetic(from1, to1, from2):
+    return from2 + to1 - from1
+
+
 def test_sampling(model: VAE, data: tf.Tensor, img_folder='./images', sample_func='slerp'):
     """
     Tests circle sampler.
     """
     batch_size = data.shape[0]
-    sample_rate = 50
+    sample_rate = 10
 
     latent, _, _ = model.encode(data, training=False)
 
@@ -50,6 +66,9 @@ def test_sampling(model: VAE, data: tf.Tensor, img_folder='./images', sample_fun
     elif sample_func == 'slerp':
         latent = slerp(latent[:-1], latent[1:], sample_rate)
         batch_size -= 1
+    elif sample_func == 'arithmetic':
+        latent = arithmetic_sample(latent[:-1], latent[1:], latent[1:], sample_rate)
+        batch_size -= 1
     else:
         raise NotImplementedError
 
@@ -58,11 +77,28 @@ def test_sampling(model: VAE, data: tf.Tensor, img_folder='./images', sample_fun
     save_img(samples, batch_size, img_folder, is_gray=False)
 
 
+def test_arithmetic_img_gif(model: VAE, images, gif, img_folder='./images'):
+    batch_size = images.shape[0]
+    latent_img, _, _ = model.encode(images, training=False)
+    latent_gif, _, _ = model.encode(gif, training=False)
+    latent_img = arithmetic_img_gif(latent_img, latent_gif)
+
+    samples = (0.5 * (model.decode(latent_img, training=False) + 1.)).numpy()
+    save_img(samples, batch_size, img_folder, is_gray=False)
+
+
 if __name__ == '__main__':
     frame_dir = "../../pngs"
     vae = VAE(512)
-    ds = make_dataset(frame_dir, 3)
-    data = next(ds.take(1).as_numpy_iterator())[0]
-    load_model(vae, name='vae', epoch=2751, batch=0)
-    test_sampling(vae, data)
 
+    ds_img = make_dataset(frame_dir, 6, shuffle=False, fmt="zoom_*-0.png")
+    ds_gif = make_dataset(frame_dir, 10, shuffle=False, fmt="zoom_96_0-*.png")
+    ds = make_dataset(frame_dir, 4, shuffle=True, fmt='*.png')
+    data_img = next(ds_img.take(1).as_numpy_iterator())[0]
+    data_gif = next(ds_gif.take(1).as_numpy_iterator())[0]
+    data = next(ds.take(1).as_numpy_iterator())[0]
+
+    load_model(vae, name='vae', epoch=2751, batch=0)
+
+    # test_sampling(vae, data, sample_func='arithmetic')
+    test_arithmetic_img_gif(vae, data_img, data_gif)
