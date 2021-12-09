@@ -1,6 +1,6 @@
 from vaegan.model import VAE
-from vaegan.utils import load_weights
 from vaegan.dataset import make_dataset
+from vaegan.experiments.path_sampling import load_model
 
 try:
     from cuml.manifold import TSNE
@@ -29,8 +29,8 @@ def get_latents(model: VAE, ds, save=True):
     return latents
 
 
-def tsne_fit(latents=None, load_latents=True, load_tsne=True, save_tsne=True, save_transformed=True):
-    if load_latents:
+def tsne_fit(latents=None, load_tsne=True, save_tsne=True, save_transformed=True):
+    if latents is None:
         latents = np.load('latents/latents.npy')
     if load_tsne:
         tsne = load('latents/tsne.joblib')
@@ -46,8 +46,8 @@ def tsne_fit(latents=None, load_latents=True, load_tsne=True, save_tsne=True, sa
     return latents
 
 
-def draw_tsne(latents=None, load_latents=True):
-    if load_latents:
+def draw_tsne(latents=None):
+    if latents is None:
         latents = np.load('latents/tsne_latents.npy')
     # 10 frames each gif
     labels = np.repeat(np.arange(latents.shape[0] // 10), 10)
@@ -60,10 +60,11 @@ def draw_tsne(latents=None, load_latents=True):
 
 
 if __name__ == '__main__':
-    # frame_dir = "../../pngs"
-    # vae = VAE(512)
-    # batch_size = 128
-    # ds = make_dataset(frame_dir, batch_size, shuffle=False, fmt='*.png')
-    # get_latents(vae, ds)
-    # tsne_fit()
-    draw_tsne()
+    frame_dir = "../../pngs"
+    vae = VAE(512)
+    load_model(vae, name='vae', epoch=2751, batch=0)
+    batch_size = 128
+    ds = make_dataset(frame_dir, batch_size, shuffle=False, fmt='*.png')
+    z = get_latents(vae, ds)
+    z = tsne_fit(latents=z, load_tsne=False)
+    draw_tsne(z)
