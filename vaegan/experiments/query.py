@@ -118,13 +118,13 @@ def test_nearest_dataset(model: VAE):
 
 
 def load_vae():
-    frame_dir = "../../pngs"
     vae = VAE(512)
     load_model(vae, name='vae', epoch=2751, batch=0)
     return vae
 
 
 if __name__ == '__main__':
+    frame_dir = "../../pngs"
     batch_size = 128
     fmt = '*-0.png'
     vae = load_vae()
