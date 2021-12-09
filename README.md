@@ -62,3 +62,9 @@ On Colab:
 import os
 os.environ['PYTHONPATH'] += ':/path/to/DeepAnimation'
 ```
+## Results
+
+### t-SNE visualization
+Here we plot the t-SNE visualization of frames sampled fron all 1416 gifs,
+each with 10 frames. 
+![tsne](doc/tsne-vis.png)
