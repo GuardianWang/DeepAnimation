@@ -77,13 +77,13 @@ def configure_for_performance(ds, batch_size=128):
     return ds
 
 
-def make_dataset(frame_dir):
+def make_dataset(frame_dir, batch_size=128):
     ds = load_list_ds(frame_dir)
     rescale = tf.keras.layers.experimental.preprocessing.Rescaling(scale=1. / 127.5, offset=-1.)
     resize = tf.keras.layers.experimental.preprocessing.Resizing(112, 112)
     ds = ds.map(process_path, num_parallel_calls=tf.data.experimental.AUTOTUNE)
     ds = ds.map(lambda x, y: (rescale(resize(x)), rescale(resize(y))), num_parallel_calls=tf.data.experimental.AUTOTUNE)
-    ds = configure_for_performance(ds)
+    ds = configure_for_performance(ds, batch_size)
     return ds
 
 

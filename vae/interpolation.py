@@ -84,37 +84,41 @@ def get_sample(model: VAE, data: tf.Tensor, radius: float, center_vec, dir_vec, 
     latent = encode(model, data)
     latent = circle_sampling(latent, radius, center_vec, dir_vec, sample_rate)
     decode_shape = [latent.shape[0]] + data.shape[1:]
-    # [batch_size * sample_rate, c, h, w]
+    # [batch_size * sample_rate, h, w, c]
     return decode(model, latent, decode_shape)
 
 
-def split_img(samples: np.ndarray, batch_size):
+def split_img(samples: np.ndarray, batch_size, is_gray=True):
     """
     Image samples generator.
     Yield samples of one image at a time.
     :param samples:
     :param batch_size:
+    :param is_gray:
     :return:
         Samples of one image. Values are in range [0, 255]
     """
     step = int(samples.shape[0] / batch_size)
     for start, end in pairwise(range(0, samples.shape[0] + 1, step)):
-        images = np.squeeze(samples[start: end], 1)
+        images = samples[start: end]
+        if is_gray:
+            images = np.squeeze(images, 1)
         images = np.clip(images, 0, 1) * 255
         images = images.astype(np.uint8)
         yield images
 
 
-def save_gray_img(samples: np.ndarray, batch_size, img_folder='.'):
+def save_img(samples: np.ndarray, batch_size, img_folder='.', is_gray=True):
     """
-    Save gray images and gifs.
-    :param samples: [batch_size * sample_rate, 1, h, w]
+    Save images and gifs.
+    :param samples: [batch_size * sample_rate, h, w, c]
     :param batch_size:
     :param img_folder:
         Root of image directory.
+    :param is_gray:
     :return:
     """
-    for n_img, img_frames in enumerate(split_img(samples, batch_size)):
+    for n_img, img_frames in enumerate(split_img(samples, batch_size, is_gray)):
         img_sub_folder = os.path.join(img_folder, f"image{n_img:03d}")
         os.makedirs(img_sub_folder, exist_ok=True)
         frames = []
@@ -142,4 +146,4 @@ def test_circle_sampling(model: VAE, data: tf.Tensor, img_folder='.'):
     center_vec = tf.one_hot([0], model.latent_size)
     dir_vec = tf.one_hot([1], model.latent_size)
     samples = get_sample(model, data, radius, center_vec, dir_vec, sample_rate).numpy()
-    save_gray_img(samples, batch_size, img_folder)
+    save_img(samples, batch_size, img_folder)

@@ -4,14 +4,22 @@ from pathlib import Path
 
 
 def save_weights(model: Model, **kwargs):
-    p = Path(f"ckpts/{kwargs['name']}")
+    if 'path' in kwargs:
+        p = Path(kwargs['path'])
+    else:
+        p = Path()
+    p = p / Path(f"ckpts/{kwargs['name']}")
     p.mkdir(parents=True, exist_ok=True)
     p = p / parse_model_name(**kwargs)
     model.save_weights(str(p))
 
 
 def load_weights(model: Model, input_shape, **kwargs):
-    p = Path(f"ckpts/{kwargs['name']}")
+    if 'path' in kwargs:
+        p = Path(kwargs['path'])
+    else:
+        p = Path()
+    p = p / Path(f"ckpts/{kwargs['name']}")
     p = p / parse_model_name(**kwargs)
 
     data = tf.zeros(input_shape)
