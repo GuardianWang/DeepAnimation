@@ -91,8 +91,8 @@ if __name__ == '__main__':
     frame_dir = "../../pngs"
     vae = VAE(512)
 
-    ds_img = make_dataset(frame_dir, 6, shuffle=False, fmt="zoom_*-0.png")
-    ds_gif = make_dataset(frame_dir, 10, shuffle=False, fmt="zoom_96_0-*.png")
+    ds_img = make_dataset(frame_dir, 6, shuffle=False, fmt="wordpress*-0.png")
+    ds_gif = make_dataset(frame_dir, 10, shuffle=False, fmt="wordpress-rotation_200_0-*.png")
     ds = make_dataset(frame_dir, 4, shuffle=True, fmt='*.png')
     data_img = next(ds_img.take(1).as_numpy_iterator())[0]
     data_gif = next(ds_gif.take(1).as_numpy_iterator())[0]
