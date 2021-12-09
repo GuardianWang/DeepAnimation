@@ -21,12 +21,18 @@ def vis_generate_images(model, data_input=None, save=True, plot=False, **kwargs)
 
 
 def vis_save(imgs, sub_r, sub_c, save=True, save_dir="", plot=False, **kwargs):
-    n_imgs = imgs.shape[0]
+    n_imgs = len(imgs)
     fig, axes = plt.subplots(sub_r, sub_c)
     for n in range(n_imgs):
         i = n // sub_c
         j = n % sub_c
-        ax = axes[i][j]
+        if sub_r == 1 or sub_c == 1:
+            if sub_r == 1 and sub_c == 1:
+                ax = axes
+            else:
+                ax = axes[n]
+        else:
+            ax = axes[i][j]
         ax.imshow(imgs[n])
         ax.axis('off')
 
@@ -80,6 +86,18 @@ def plot_to_image(figure):
     # Add the batch dimension
     image = tf.expand_dims(image, 0)
     return image
+
+
+def plot_by_paths(files, r=None, c=None, save=False, plot=True):
+    imgs = []
+    for file in files:
+        x = plt.imread(file)
+        imgs.append(x)
+    if r is None or c is None:
+        r = 1
+        c = len(imgs)
+
+    vis_save(imgs, r, c, save=save, plot=plot)
 
 
 if __name__ == "__main__":

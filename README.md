@@ -44,8 +44,9 @@ different domains.
 
 ![MNIST](doc/unseen.gif)
 
-We also notice that the model tends to generate 3 and 6, which deserves 
-more investigation.
+We also notice that the model tends to generate 3 and 6.
+This is possibly because we are using the same sampling vectors
+as the previous example.
 
 ## Environment Variable
 
@@ -68,3 +69,15 @@ os.environ['PYTHONPATH'] += ':/path/to/DeepAnimation'
 Here we plot the t-SNE visualization of frames sampled fron all 1416 gifs,
 each with 10 frames. 
 ![tsne](doc/tsne-vis.png)
+
+### image query
+
+We used the ahash algorithm as well as the latent vector to do deep hashing.
+Therefore we can query hand drawings and fetch well-designed images
+in our dataset.
+With the hand drawing, the top-10 results are:
+
+![draw](doc/zoom_draw.png)
+![result](doc/zoom_query.png)
+
+Note that the fifth result is a perfect match!
