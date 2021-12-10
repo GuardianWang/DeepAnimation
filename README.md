@@ -90,3 +90,11 @@ Note that the fifth result is a perfect match!
 
 More results:
 ![more](doc/more_query.png)
+
+
+### play with your drawings
+
+1. `cd` into `vaegan/experiments` 
+2. Modify `query.py` `test_nearest_dataset()`. `frame_dir`
+is image directory and `fmt` is image file name.
+3. run `python query.py`
