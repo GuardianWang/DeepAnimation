@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- Generator: Adobe Illustrator 23.0.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 40 40" style="enable-background:new 0 0 40 40;" xml:space="preserve">
+<path style="fill:#FFEEA3;" d="M20,38.5C9.799,38.5,1.5,30.201,1.5,20S9.799,1.5,20,1.5S38.5,9.799,38.5,20S30.201,38.5,20,38.5z"/>
+<path style="fill:#C29653;" d="M20,2c9.925,0,18,8.075,18,18s-8.075,18-18,18S2,29.925,2,20S10.075,2,20,2 M20,1
+	C9.507,1,1,9.507,1,20s8.507,19,19,19s19-8.507,19-19S30.493,1,20,1L20,1z"/>
+<path style="fill:#FFFFFF;stroke:#4788C7;stroke-miterlimit:10;" d="M27,14.5c-1.933,0-3.5,1.567-3.5,3.5s1.567,3.5,3.5,3.5
+	s3.5-1.567,3.5-3.5S28.933,14.5,27,14.5L27,14.5z"/>
+<path style="fill:#4788C7;" d="M27,16.75c-0.69,0-1.25,0.56-1.25,1.25s0.56,1.25,1.25,1.25s1.25-0.56,1.25-1.25
+	S27.69,16.75,27,16.75z"/>
+<path style="fill:#FFFFFF;stroke:#4788C7;stroke-miterlimit:10;" d="M13,14.5c-1.933,0-3.5,1.567-3.5,3.5s1.567,3.5,3.5,3.5
+	s3.5-1.567,3.5-3.5S14.933,14.5,13,14.5z"/>
+<path style="fill:#4788C7;" d="M13,16.75c-0.69,0-1.25,0.56-1.25,1.25s0.56,1.25,1.25,1.25s1.25-0.56,1.25-1.25
+	S13.69,16.75,13,16.75z"/>
+<text transform="matrix(1 0 0 1 800 600)" style="font-family:'MyriadPro-Regular'; font-size:12px;">glasses</text>
+<g>
+	<path style="fill:#4E5E6D;" d="M27,22.5c-5.302,0-6.5-5.49-6.5-6.5h-1c0,1.01-1.198,6.5-6.5,6.5c-5.342,0-7.5-4.587-7.5-6.5v-0.5
+		h-1v-1h31v1h-1V16C34.5,17.913,32.342,22.5,27,22.5z"/>
+	<path style="fill:#36404D;" d="M34,15v1c0,1.766-2.014,6-7,6c-4.882,0-6-5.213-6-6h-2c0,0.787-1.118,6-6,6c-4.986,0-7-4.234-7-6v-1
+		h14H34 M36,14h-1H20H5H4v2h1c0,2.111,2.271,7,8,7c5.637,0,7-5.835,7-7c0,1.165,1.363,7,7,7c5.729,0,8-4.889,8-7h1V14L36,14z"/>
+</g>
+<line style="fill:none;stroke:#C29653;" x1="12" y1="30.5" x2="27.493" y2="30.5"/>
+</svg>

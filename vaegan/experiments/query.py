@@ -40,6 +40,7 @@ def hash_images(model, ds, frame_dir, fmt):
 
 def get_query(model: VAE, image):
     """image to hash"""
+    image = image[..., :3]
     image = tf.convert_to_tensor(image)
     image = tf.image.resize(image, [112, 112])
     image = image * (1. / 127.5) - 1.
@@ -59,9 +60,12 @@ def nearest(query, data, k=1):
     return top
 
 
-def nearest_png_files(query, k=1):
+def nearest_png_files(query, k=1, **kwargs):
     """Get a list of file paths to closest images in dataset"""
-    dataset = load('latents/hash.joblib')
+    p = Path()
+    if 'path' in kwargs:  # path to vaegan
+        p = Path(kwargs['path']) / 'experiments'
+    dataset = load(str(p / 'latents/hash.joblib'))
     top = nearest(query, dataset['hash'], k)
     files = dataset['files'][top]
 
@@ -96,13 +100,15 @@ def nearest_img_files(files, fmt='png'):
     return files
 
 
-def img2dataset(img, model, k=1, fmt='png'):
+def img2dataset(img, model, k=1, fmt='png', **kwargs):
     """
     Given an image tensor, return the top k similar image path.
     :param fmt: "svg" or 'png' or 'gif'
     """
+    import os 
+
     img = get_query(model, img)
-    files = nearest_png_files(img, k)
+    files = nearest_png_files(img, k, **kwargs)
     files = nearest_img_files(files, fmt=fmt)
     return files
 
@@ -117,9 +123,9 @@ def test_nearest_dataset(model: VAE):
     plot_by_paths(files)
 
 
-def load_vae():
+def load_vae(**kwargs):
     vae = VAE(512)
-    load_model(vae, name='vae', epoch=2751, batch=0)
+    load_model(vae, name='vae', epoch=2751, batch=0, **kwargs)
     return vae
 
 
