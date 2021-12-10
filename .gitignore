@@ -4,6 +4,12 @@ __pycache__/
 *$py.class
 .idea
 .vscode
+.DS_Store
+*zip
+
+transformed_svgs
+pngs
+icons
 
 # C extensions
 *.so
