@@ -85,12 +85,12 @@ def train_epoch(model, data, content_model, **kwargs):
 def train(data_path):
     vaegan = VAEGAN()
     vgg = VGG()
-    data = make_dataset(data_path, batch_size=128)
+    data = make_dataset(data_path, batch_size=64)
     n_epochs = 100
     train_writer = get_writer()
     for i in trange(n_epochs):
         epoch_info = {'cur_epoch': i + 1}
-        train_epoch(vaegan, data, vgg, epoch_info=epoch_info, writer=train_writer)
+        train_epoch(vaegan, data, vgg, epoch_info=epoch_info, writer=train_writer, epoch=i + 1)
 
 
 if __name__ == "__main__":
