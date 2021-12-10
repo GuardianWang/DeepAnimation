@@ -111,10 +111,13 @@ def test_nearest_dataset(model: VAE):
     # load a test png image
     # frame_dir = "../../pngs"
     frame_dir = r"C:\Users\zichu\Downloads"
-    ds = make_dataset(frame_dir, batch_size=1, fmt='zoom_draw.png')
-    img = tf.squeeze((ds.take(1).as_numpy_iterator().next()[0] + 1.) * 127.5, 0)
-    files = img2dataset(img, model, k=10)
-    plot_by_paths(files)
+    # for fmt in ['zoom', 'check', 'compass', 'phone', 'bulb', 'facebook', 'heart', 'smile']:
+    for fmt in ['lightning', 'bin', 'yeah', 'pokerface', 'filter', 'ball', 'phone', 'clock']:
+        fmt += '_draw.png'
+        ds = make_dataset(frame_dir, batch_size=1, fmt=fmt)
+        img = tf.squeeze((ds.take(1).as_numpy_iterator().next()[0] + 1.) * 127.5, 0)
+        files = img2dataset(img, model, k=10)
+        plot_by_paths(files, save=True, save_dir='images/query_fail', plot=False, name=f'query_{fmt}')
 
 
 def load_vae():

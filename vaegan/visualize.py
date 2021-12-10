@@ -39,7 +39,10 @@ def vis_save(imgs, sub_r, sub_c, save=True, save_dir="", plot=False, **kwargs):
     if save:
         p = Path(save_dir)
         p.mkdir(exist_ok=True)
-        p = p / f"epoch_{kwargs['epoch']:04d}_batch_{kwargs['batch']:04d}"
+        if 'name' in kwargs:
+            p /= kwargs['name']
+        else:
+            p = p / f"epoch_{kwargs['epoch']:04d}_batch_{kwargs['batch']:04d}"
         plt.savefig(str(p))
     if 'writer' in kwargs:
         writer = kwargs['writer']
@@ -88,7 +91,7 @@ def plot_to_image(figure):
     return image
 
 
-def plot_by_paths(files, r=None, c=None, save=False, plot=True):
+def plot_by_paths(files, r=None, c=None, save=False, save_dir='', plot=True, **kwargs):
     imgs = []
     for file in files:
         x = plt.imread(file)
@@ -97,7 +100,7 @@ def plot_by_paths(files, r=None, c=None, save=False, plot=True):
         r = 1
         c = len(imgs)
 
-    vis_save(imgs, r, c, save=save, plot=plot)
+    vis_save(imgs, r, c, save=save, save_dir=save_dir, plot=plot, **kwargs)
 
 
 if __name__ == "__main__":
