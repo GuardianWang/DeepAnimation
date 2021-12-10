@@ -1,6 +1,7 @@
 import tensorflow as tf
 from tensorflow.keras import Model
 from pathlib import Path
+from datetime import datetime
 
 
 def save_weights(model: Model, **kwargs):
@@ -25,6 +26,16 @@ def load_weights(model: Model, input_shape, **kwargs):
     data = tf.zeros(input_shape)
     model(data)
     model.load_weights(str(p))
+
+
+def get_writer():
+    p = Path("logs")
+    p.mkdir(parents=True, exist_ok=True)
+    cur_time = datetime.now().strftime("%Y%m%d-%H%M%S")
+    p = p / cur_time / "train"
+    train_writer = tf.summary.create_file_writer(str(p))
+
+    return train_writer
 
 
 def parse_model_name(**kwargs):

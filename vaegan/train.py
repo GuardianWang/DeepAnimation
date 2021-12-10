@@ -1,16 +1,23 @@
+import tensorflow as tf
+gpus = tf.config.experimental.list_physical_devices('GPU')
+if gpus:
+    try:
+        for gpu in gpus:
+            tf.config.experimental.set_memory_growth(gpu, True)
+    except RuntimeError as e:
+        print(e)
+
 from vaegan.model import VAEGAN, VGG
 from vaegan.dataset import load_toy_dataset, make_dataset
 from vaegan.loss import *
 from vaegan.visualize import *
-
-import tensorflow as tf
+from vaegan.utils import *
 
 from tqdm import tqdm, trange
 
 
 @tf.function
 def train_batch(model: VAEGAN, data, content_model):
-    # diff = data[0] - data[1]
     with tf.GradientTape() as g_tape, tf.GradientTape() as d_tape, tf.GradientTape() as e_tape:
         latent_img, mu_img, logvar_img = model.encode_image(data[1])
         fake_images = model.generate(x=latent_img, m=None)
@@ -54,11 +61,14 @@ def train_batch(model: VAEGAN, data, content_model):
 
 
 def train_epoch(model, data, content_model, **kwargs):
+    train_writer = kwargs['writer']
+    loss_handler = LossHandler()
     pbar = tqdm(total=len(data))
     for i, batch_data in enumerate(data):
         losses = train_batch(model, batch_data, content_model)
 
         losses = {k: v.numpy() for k, v in losses.items()}
+        loss_handler.update(losses, batch_data[0].shape[0])
         losses.update(kwargs["epoch_info"])
         pbar.update()
         pbar.set_postfix(losses)
@@ -67,18 +77,23 @@ def train_epoch(model, data, content_model, **kwargs):
             vis_generate_images(model, batch_data[1],
                                 epoch=kwargs["epoch_info"]["cur_epoch"], batch=i + 1)
 
+    with train_writer.as_default():
+        for k, v in loss_handler.items():
+            tf.summary.scalar(k, v, step=kwargs['epoch'])
+
 
 def train(data_path):
     vaegan = VAEGAN()
     vgg = VGG()
-    data = make_dataset(data_path)
+    data = make_dataset(data_path, batch_size=128)
     n_epochs = 100
+    train_writer = get_writer()
     for i in trange(n_epochs):
         epoch_info = {'cur_epoch': i + 1}
-        train_epoch(vaegan, data, vgg, epoch_info=epoch_info)
+        train_epoch(vaegan, data, vgg, epoch_info=epoch_info, writer=train_writer)
 
 
 if __name__ == "__main__":
-    frame_dir = r"C:/Users/zichu/Downloads/icons/target_svg/pngs"
+    frame_dir = "../pngs"
     # images = load_toy_dataset()
     train(frame_dir)

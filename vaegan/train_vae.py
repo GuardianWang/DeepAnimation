@@ -15,8 +15,6 @@ from vaegan.utils import *
 from vaegan.optimizers import *
 
 from tqdm import tqdm, trange
-from pathlib import Path
-from datetime import datetime
 
 
 @tf.function
@@ -77,16 +75,6 @@ def train(data_path):
 
         if i % 50 == 0:
             save_weights(vae, name="vae", epoch=i + 1, batch=0)
-
-
-def get_writer():
-    p = Path("logs")
-    p.mkdir(parents=True, exist_ok=True)
-    cur_time = datetime.now().strftime("%Y%m%d-%H%M%S")
-    p = p / cur_time / "train"
-    train_writer = tf.summary.create_file_writer(str(p))
-
-    return train_writer
 
 
 if __name__ == "__main__":
