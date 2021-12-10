@@ -1,6 +1,12 @@
 # DeepAnimation
 CS2470 Fall 2021 final project.
 
+## Download data and model weights
+
+```bash
+bash download.sh
+bash download_weights.sh
+```
 
 ## Circle sampler
 
@@ -81,3 +87,6 @@ With the hand drawing, the top-10 results are:
 ![result](doc/zoom_query.png)
 
 Note that the fifth result is a perfect match!
+
+More results:
+![more](doc/more_query.png)
